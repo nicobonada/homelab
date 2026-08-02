@@ -28,6 +28,11 @@
   users.users.nico = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "docker" ];
+    # Workstation keys (seyruun + oakhill) for classic SSH when Tailscale is off.
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDfCbF/qHMrvFvPF3pwN78vu/HV9zLATmy1m0H+9wUl3 nico@seyruun"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGiS0WGMF1xtibs+k+4WjkpPCv0stUUGY7E75Nuh2Fib nico@oakhill"
+    ];
     packages = with pkgs; [
       tree
       duf
@@ -53,11 +58,21 @@
     ];
   };
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      # Keep passwords until LAN key login is verified from both workstations.
+      PasswordAuthentication = true;
+      KbdInteractiveAuthentication = true;
+      PermitRootLogin = "no";
+    };
+  };
 
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "client";
+    # Tailscale SSH (identity) as primary remote path; see ACLs in tailscale-policy.
+    extraSetFlags = [ "--ssh" ];
   };
   services.resolved.enable = true;
 
