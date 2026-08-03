@@ -92,25 +92,13 @@
     openFirewall = true;
   };
 
+  # Samba music share used to live on a guest-passthrough T7 (/mnt/backup-drive).
+  # That disk is now the host vzdump volume (virtiofs RO). Re-add a share when
+  # music has a new path (e.g. staged from seyruun elsewhere).
   services.samba = {
-    enable = true;
-    openFirewall = true;
-    settings = {
-      global = {
-        workgroup = "WORKGROUP";
-        "server string" = "nixos-smb";
-        "security" = "user";
-        "map to guest" = "Bad User";
-      };
-      music = {
-        path = "/mnt/backup-drive/music";
-        browseable = "yes";
-        writable = "no";
-        "guest ok" = "no";
-      };
-    };
+    enable = false;
   };
-  services.samba-wsdd.enable = true;
+  services.samba-wsdd.enable = false;
 
   programs.neovim = {
     enable = true;
@@ -138,6 +126,8 @@
           "/run/current-system/sw/bin/systemctl start --no-block vzdump-b2.service"
           "/run/current-system/sw/bin/systemctl start vzdump-b2-smoke.service"
           "/run/current-system/sw/bin/systemctl stop vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl stop vzdump-b2.timer"
+          "/run/current-system/sw/bin/systemctl start vzdump-b2.timer"
           "/run/current-system/sw/bin/systemctl status vzdump-b2.service"
           "/run/current-system/sw/bin/systemctl reset-failed vzdump-b2.service"
         ];

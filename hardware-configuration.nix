@@ -32,11 +32,8 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  fileSystems."/mnt/backup-drive" = {
-    device = "/dev/disk/by-label/stuff-backup";
-    fsType = "ext4";
-    options = [ "noatime" ];
-  };
+  # T7 is host-side only now (PVE /mnt/backup + virtiofs pve-backup).
+  # Do not passthrough USB storage into this guest.
 
   swapDevices = [ ];
 

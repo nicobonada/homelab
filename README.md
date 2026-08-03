@@ -25,7 +25,9 @@ nh os switch .
 
 ## Offsite backups (vzdump → B2)
 
-Proxmox writes dumps on the hypervisor (`/mnt/backup`). This VM mounts that tree **read-only over NFS** and runs `vzdump-b2` (rclone + sops) on a daily timer. Do not run the old PVE `rclone-backup` unit in parallel. See comments in `vzdump-b2.nix` for mount path, bucket, and timer.
+Proxmox writes dumps on the hypervisor at `/mnt/backup` (USB **Samsung T7 Shield**, not the flaky SanDisk Extreme). This VM mounts that tree **read-only via virtio-fs** (Directory Mapping id `pve-backup`) and runs `vzdump-b2` (rclone + sops) on a daily timer. Do not run the old PVE `rclone-backup` unit in parallel. Virtiofs is not hot-pluggable — reboot the guest after attaching the share. See `vzdump-b2.nix` for mount path, bucket, and timer.
+
+Do **not** SCSI/USB-passthrough the T7 into this guest — the host owns it for `vzdump`.
 
 ## License
 

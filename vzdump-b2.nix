@@ -5,9 +5,10 @@
   ...
 }:
 let
-  # PVE hypervisor LAN IP (vmbr0). Dumps stay on the host SSD; this VM only reads them.
-  pveLan = "10.0.10.200";
-  exportPath = "/mnt/backup";
+  # Host path /mnt/backup shared into this guest via PVE Directory Mapping
+  # (Datacenter → Directory Mappings → id "pve-backup" → /mnt/backup).
+  # Guest mount tag must match the mapping id. Not hot-pluggable: reboot after attach.
+  virtiofsTag = "pve-backup";
   mountPoint = "/mnt/pve-backup";
   # Same bucket the old pve rclone job used.
   b2Bucket = "nico-homelab-proxmox-backup";
@@ -15,7 +16,7 @@ let
   # Decrypted by sops-nix at activation (age key: ~/.config/sops/age/keys.txt).
   envFile = config.sops.templates."vzdump-b2.env".path;
 
-  # Only the vzdump tree — not lost+found (root-only on the PVE export).
+  # Only the vzdump tree — not lost+found on the host volume.
   rcloneFlags = [
     "sync"
     "${mountPoint}/dump"
@@ -23,15 +24,16 @@ let
     # No interactive config file; credentials come from the sops env template.
     "--config"
     "/dev/null"
-    # Reliability over throughput: large .vma.zst + B2 multipart was thrashing on pve
-    # with concurrent transfers and ancient rclone (sha1 hash differ after 100%).
+    # Reliability over throughput: multi‑GiB .vma.zst + B2 multipart.
     "--transfers"
     "1"
     "--checkers"
     "2"
     "--b2-upload-concurrency"
     "1"
-    # Avoid multi-thread reader stalls on NFS for multi‑GiB .vma.zst files.
+    # Permanently delete on remove so failed uploads do not leave billable hide versions.
+    "--b2-hard-delete"
+    # Avoid multi-thread reader issues on multi‑GiB files.
     "--multi-thread-streams"
     "0"
     "--order-by"
@@ -47,29 +49,18 @@ let
   ];
 in
 {
-  # NFS client for RO dump tree from PVE (vzdump still writes on the host).
-  boot.supportedFilesystems = [ "nfs" ];
-  services.rpcbind.enable = true;
-
+  # PVE virtio-fs share of host dump tree (replaces soft NFS).
   fileSystems.${mountPoint} = {
-    device = "${pveLan}:${exportPath}";
-    fsType = "nfs";
+    device = virtiofsTag;
+    fsType = "virtiofs";
     options = [
       "ro"
-      "nfsvers=4"
-      "_netdev"
       "nofail"
-      "x-systemd.automount"
-      "x-systemd.mount-timeout=30s"
-      "soft"
-      "timeo=100"
-      "retrans=2"
     ];
   };
 
   environment.systemPackages = [
     pkgs.rclone
-    pkgs.nfs-utils
     pkgs.sops
     pkgs.age
   ];
@@ -96,7 +87,7 @@ in
     };
   };
 
-  # Offsite copy of Proxmox vzdump archives. Source is NFS RO from PVE;
+  # Offsite copy of Proxmox vzdump archives. Source is virtio-fs from PVE;
   # B2 credentials via sops template (never plaintext in the repo).
   systemd.services.vzdump-b2 = {
     description = "Rclone sync of PVE vzdump tree to Backblaze B2";
@@ -105,7 +96,7 @@ in
     unitConfig = {
       # Skip until sops-nix has rendered the template (age key present on host).
       ConditionPathExists = envFile;
-      # Triggers the NFS automount and waits for it.
+      # Wait for virtiofs mount.
       RequiresMountsFor = mountPoint;
     };
     serviceConfig = {
@@ -116,7 +107,7 @@ in
         "HOME=/var/lib/vzdump-b2"
       ];
       StateDirectory = "vzdump-b2";
-      # Fail loud if the NFS tree is missing dumps (export down or wrong path).
+      # Fail loud if the dump tree is missing (share down or wrong path).
       ExecStartPre = "${pkgs.coreutils}/bin/test -d ${mountPoint}/dump";
       ExecStart = lib.escapeShellArgs (
         [
