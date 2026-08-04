@@ -110,7 +110,22 @@
 
   programs.nh.enable = true;
 
-  security.sudo.enable = true;
+  security.sudo = {
+    enable = true;
+    # Same scoped rebuild rights as workstations (nh + nixos-rebuild only).
+    extraRules = [
+      {
+        users = [ "nico" ];
+        commands = map (command: {
+          inherit command;
+          options = [ "NOPASSWD" ];
+        }) [
+          "/run/current-system/sw/bin/nh"
+          "/run/current-system/sw/bin/nixos-rebuild"
+        ];
+      }
+    ];
+  };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   system.stateVersion = "25.11";
