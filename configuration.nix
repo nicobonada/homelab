@@ -61,9 +61,9 @@
   services.openssh = {
     enable = true;
     settings = {
-      # Keep passwords until LAN key login is verified from both workstations.
-      PasswordAuthentication = true;
-      KbdInteractiveAuthentication = true;
+      # Keys + Tailscale SSH only (workstation keys declared above).
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
     };
   };
