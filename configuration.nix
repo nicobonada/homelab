@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ./vzdump-b2.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
