@@ -3,11 +3,25 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-  };
-
-  outputs = { self, nixpkgs, ... }: {
-    nixosConfigurations.homelab = nixpkgs.lib.nixosSystem {
-      modules = [ ./configuration.nix ];
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
+
+  outputs =
+    {
+      self,
+      nixpkgs,
+      sops-nix,
+      ...
+    }:
+    {
+      nixosConfigurations.homelab = nixpkgs.lib.nixosSystem {
+        modules = [
+          sops-nix.nixosModules.sops
+          ./configuration.nix
+        ];
+      };
+    };
 }

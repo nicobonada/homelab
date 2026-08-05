@@ -6,11 +6,11 @@ Working personal config, not a template. Services and packages live in `configur
 
 ## Secrets
 
-**No secrets in this repo** (no Tailscale auth keys, SSH private keys, Samba password hashes, API tokens, or B2 keys). Enroll Tailscale, set Samba users, and configure SSH on the host. Disk labels/UUIDs in `hardware-configuration.nix` are machine-specific.
+**No plaintext secrets in this repo.** B2 credentials for vzdump offsite live in **`secrets/vzdump-b2.yaml`** (sops/age), same pattern as `~/nix-config` music-backup. The **age private key** stays on each machine at `~/.config/sops/age/keys.txt` (not committed). Other host secrets (Tailscale, Samba, SSH) are enrolled on the machine only. Disk labels/UUIDs in `hardware-configuration.nix` are machine-specific.
 
 ## vzdump → B2 (offsite)
 
-Proxmox still writes dumps on the **PVE host** SSD (`/mnt/backup`). This VM only **reads** that tree over **NFS (RO)** and uploads with a current **rclone** (`vzdump-b2.nix`). Do **not** leave the old `rclone-backup` timer running on PVE.
+Proxmox still writes dumps on the **PVE host** SSD (`/mnt/backup`). This VM only **reads** that tree over **NFS (RO)** and uploads with a current **rclone** (`vzdump-b2.nix` + sops-nix). Do **not** leave the old `rclone-backup` timer running on PVE.
 
 ### One-time on PVE (root console)
 
@@ -20,7 +20,8 @@ Install/export NFS for the dump disk only (LAN to this VM). Example:
 apt install -y nfs-kernel-server
 install -d -m 755 /etc/exports.d
 printf '%s\n' '/mnt/backup 10.0.10.201(ro,sync,no_subtree_check,root_squash)' >/etc/exports.d/vzdump-homelab.exports
-exportfs -rav
+# /usr/sbin may be missing from PATH
+/usr/sbin/exportfs -rav
 systemctl enable --now nfs-server
 
 # Stop and disable the legacy host-side upload (old rclone).
@@ -30,20 +31,18 @@ systemctl stop rclone-backup.service 2>/dev/null || true
 
 Firewall: allow NFS from `10.0.10.201` only if you are not already wide-open on `vmbr0`.
 
-Copy B2 app key material off the old rclone config into the VM (see below). Prefer a **bucket-scoped** app key for `nico-homelab-proxmox-backup` (not the master key).
+### Age key on this host (sops-nix)
 
-### Secrets on homelab
+sops-nix decrypts at activation. Install the **same** personal age key used for `nix-config` (before or with the first switch that needs secrets):
 
 ```fish
-sudo install -m 600 -o root -g root /dev/null /etc/vzdump-b2.env
-sudo $EDITOR /etc/vzdump-b2.env
+install -d -m 700 ~/.config/sops/age
+# from seyruun/oakhill, once:
+scp ~/.config/sops/age/keys.txt homelab:.config/sops/age/keys.txt
+chmod 600 ~/.config/sops/age/keys.txt
 ```
 
-```text
-RCLONE_CONFIG_BACKBLAZE_TYPE=b2
-RCLONE_CONFIG_BACKBLAZE_ACCOUNT=your_key_id
-RCLONE_CONFIG_BACKBLAZE_KEY=your_application_key
-```
+Edit secrets: `sops secrets/vzdump-b2.yaml` (needs `sops` + age key).
 
 ### Deploy + first run
 

@@ -11,12 +11,9 @@ let
   mountPoint = "/mnt/pve-backup";
   # Same bucket the old pve rclone job used.
   b2Bucket = "nico-homelab-proxmox-backup";
-  # Root-only env file (not in git). See README "vzdump → B2".
-  # Expected keys (rclone env-config form):
-  #   RCLONE_CONFIG_BACKBLAZE_TYPE=b2
-  #   RCLONE_CONFIG_BACKBLAZE_ACCOUNT=...
-  #   RCLONE_CONFIG_BACKBLAZE_KEY=...
-  envFile = "/etc/vzdump-b2.env";
+
+  # Decrypted by sops-nix at activation (age key: ~/.config/sops/age/keys.txt).
+  envFile = config.sops.templates."vzdump-b2.env".path;
 
   rcloneFlags = [
     "sync"
@@ -64,16 +61,38 @@ in
   environment.systemPackages = [
     pkgs.rclone
     pkgs.nfs-utils
+    pkgs.sops
+    pkgs.age
   ];
 
+  # B2 app key: secrets/vzdump-b2.yaml (age-encrypted). Same recipient as nix-config.
+  sops = {
+    defaultSopsFile = ./secrets/vzdump-b2.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/nico/.config/sops/age/keys.txt";
+
+    secrets = {
+      "vzdump_b2/b2_account_id" = { };
+      "vzdump_b2/b2_account_key" = { };
+    };
+
+    templates."vzdump-b2.env" = {
+      content = ''
+        RCLONE_CONFIG_BACKBLAZE_TYPE=b2
+        RCLONE_CONFIG_BACKBLAZE_ACCOUNT=${config.sops.placeholder."vzdump_b2/b2_account_id"}
+        RCLONE_CONFIG_BACKBLAZE_KEY=${config.sops.placeholder."vzdump_b2/b2_account_key"}
+      '';
+    };
+  };
+
   # Offsite copy of Proxmox vzdump archives. Source is NFS RO from PVE;
-  # credentials live only on this host in envFile.
+  # B2 credentials via sops template (never plaintext in the repo).
   systemd.services.vzdump-b2 = {
     description = "Rclone sync of PVE vzdump tree to Backblaze B2";
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
     unitConfig = {
-      # Skip cleanly until secrets exist (first boot / before you copy B2 keys).
+      # Skip until sops-nix has rendered the template (age key present on host).
       ConditionPathExists = envFile;
       # Triggers the NFS automount and waits for it.
       RequiresMountsFor = mountPoint;
@@ -83,7 +102,12 @@ in
       EnvironmentFile = envFile;
       # Fail loud if the NFS tree is missing dumps (export down or wrong path).
       ExecStartPre = "${pkgs.coreutils}/bin/test -d ${mountPoint}/dump";
-      ExecStart = lib.escapeShellArgs ([ "${pkgs.rclone}/bin/rclone" ] ++ rcloneFlags);
+      ExecStart = lib.escapeShellArgs (
+        [
+          "${pkgs.rclone}/bin/rclone"
+        ]
+        ++ rcloneFlags
+      );
       Nice = 10;
       IOSchedulingClass = "best-effort";
       IOSchedulingPriority = 7;

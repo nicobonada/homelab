@@ -1,0 +1,8 @@
+# Same age recipient as ~/nix-config (personal fleet decrypt key).
+keys:
+  - &user_nico age12zstffnl3y9jvd3auep78alcw527a6dyfdy5d2tnzpd5qavcl5psd92rek
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|yml|json|env)$
+    key_groups:
+      - age:
+          - *user_nico
