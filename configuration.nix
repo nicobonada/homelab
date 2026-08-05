@@ -126,6 +126,7 @@
           # vzdump-b2 is a system unit (sops secrets are root-only).
           "/run/current-system/sw/bin/systemctl start vzdump-b2.service"
           "/run/current-system/sw/bin/systemctl start --no-block vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl start vzdump-b2-smoke.service"
           "/run/current-system/sw/bin/systemctl stop vzdump-b2.service"
           "/run/current-system/sw/bin/systemctl status vzdump-b2.service"
           "/run/current-system/sw/bin/systemctl reset-failed vzdump-b2.service"

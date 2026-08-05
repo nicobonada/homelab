@@ -31,8 +31,13 @@ let
     "2"
     "--b2-upload-concurrency"
     "1"
+    # Avoid multi-thread reader stalls on NFS for multi‑GiB .vma.zst files.
+    "--multi-thread-streams"
+    "0"
     "--order-by"
     "modtime,descending"
+    "--stats"
+    "1m"
     "--retries"
     "5"
     "--low-level-retries"
@@ -137,6 +142,36 @@ in
       Persistent = true;
       RandomizedDelaySec = "15m";
       Unit = "vzdump-b2.service";
+    };
+  };
+
+  # Manual smoke: copies one tiny .log to B2 (not on a timer).
+  systemd.services.vzdump-b2-smoke = {
+    description = "Smoke-test B2 auth with one small vzdump log";
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+    unitConfig = {
+      ConditionPathExists = envFile;
+      RequiresMountsFor = mountPoint;
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      EnvironmentFile = envFile;
+      Environment = [ "HOME=/var/lib/vzdump-b2" ];
+      StateDirectory = "vzdump-b2";
+      ExecStart = lib.escapeShellArgs [
+        "${pkgs.rclone}/bin/rclone"
+        "copy"
+        "${mountPoint}/dump"
+        "backblaze:${b2Bucket}/dump"
+        "--config"
+        "/dev/null"
+        "--include"
+        "*.log"
+        "--include"
+        "*.notes"
+        "-v"
+      ];
     };
   };
 }
