@@ -15,10 +15,14 @@ let
   # Decrypted by sops-nix at activation (age key: ~/.config/sops/age/keys.txt).
   envFile = config.sops.templates."vzdump-b2.env".path;
 
+  # Only the vzdump tree — not lost+found (root-only on the PVE export).
   rcloneFlags = [
     "sync"
-    mountPoint
-    "backblaze:${b2Bucket}"
+    "${mountPoint}/dump"
+    "backblaze:${b2Bucket}/dump"
+    # No interactive config file; credentials come from the sops env template.
+    "--config"
+    "/dev/null"
     # Reliability over throughput: large .vma.zst + B2 multipart was thrashing on pve
     # with concurrent transfers and ancient rclone (sha1 hash differ after 100%).
     "--transfers"
@@ -65,11 +69,13 @@ in
     pkgs.age
   ];
 
-  # B2 app key: secrets/vzdump-b2.yaml (age-encrypted). Same recipient as nix-config.
+  # B2 app key: secrets/vzdump-b2.yaml (age-encrypted for workstation + this host).
+  # System activation runs as root, so decrypt via host SSH key (not nico's
+  # ~/.config/sops/age/keys.txt, which root cannot read).
   sops = {
     defaultSopsFile = ./secrets/vzdump-b2.yaml;
     defaultSopsFormat = "yaml";
-    age.keyFile = "/home/nico/.config/sops/age/keys.txt";
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
     secrets = {
       "vzdump_b2/b2_account_id" = { };
@@ -100,6 +106,11 @@ in
     serviceConfig = {
       Type = "oneshot";
       EnvironmentFile = envFile;
+      # rclone looks up $HOME for a config dir; keep it off the root of /.
+      Environment = [
+        "HOME=/var/lib/vzdump-b2"
+      ];
+      StateDirectory = "vzdump-b2";
       # Fail loud if the NFS tree is missing dumps (export down or wrong path).
       ExecStartPre = "${pkgs.coreutils}/bin/test -d ${mountPoint}/dump";
       ExecStart = lib.escapeShellArgs (

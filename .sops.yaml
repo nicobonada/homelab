@@ -1,8 +1,12 @@
-# Same age recipient as ~/nix-config (personal fleet decrypt key).
+# user_nico: edit secrets from workstations (same key as ~/nix-config).
+# host_homelab: system sops-nix decrypts with /etc/ssh/ssh_host_ed25519_key
+#   (age1qve6q… from: ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub).
 keys:
   - &user_nico age12zstffnl3y9jvd3auep78alcw527a6dyfdy5d2tnzpd5qavcl5psd92rek
+  - &host_homelab age1qve6qram64grke7k0nejexg7w84uf3kjkcwc9nluyc7w86t85geqnz972d
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|yml|json|env)$
     key_groups:
       - age:
           - *user_nico
+          - *host_homelab

@@ -113,7 +113,7 @@
 
   security.sudo = {
     enable = true;
-    # Same scoped rebuild rights as workstations (nh + nixos-rebuild only).
+    # Scoped elevation for rebuilds + offsite backup ops (agents / scripts).
     extraRules = [
       {
         users = [ "nico" ];
@@ -123,6 +123,12 @@
         }) [
           "/run/current-system/sw/bin/nh"
           "/run/current-system/sw/bin/nixos-rebuild"
+          # vzdump-b2 is a system unit (sops secrets are root-only).
+          "/run/current-system/sw/bin/systemctl start vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl start --no-block vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl stop vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl status vzdump-b2.service"
+          "/run/current-system/sw/bin/systemctl reset-failed vzdump-b2.service"
         ];
       }
     ];
