@@ -17,7 +17,17 @@
     }
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # flakes + nix-command come from the Determinate Nix module; keep trusted rebuilders.
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    trusted-users = [
+      "root"
+      "@wheel"
+    ];
+  };
 
   networking = {
     hostName = "homelab";
