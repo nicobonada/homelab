@@ -9,6 +9,8 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Portable Grok wrapper + agent-apps (not on interactive PATH).
+    grok-config.url = "git+ssh://git@github.com/nicobonada/grok-config.git";
   };
 
   outputs =
@@ -17,6 +19,7 @@
       nixpkgs,
       determinate,
       sops-nix,
+      grok-config,
       ...
     }:
     {
@@ -27,5 +30,9 @@
           ./configuration.nix
         ];
       };
+
+      # Workstation shell: enter from this repo (`nix develop` / direnv), not global HM.
+      # Expand packages here later (e.g. docker client, sops) for lab ops tools.
+      devShells.x86_64-linux.default = grok-config.devShells.x86_64-linux.default;
     };
 }

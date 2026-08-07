@@ -13,6 +13,17 @@ Uses [Determinate Nix](https://determinate.systems/) and
 
 **System** (NixOS) and **apps** (Compose) are deployed separately on purpose.
 
+## Workstation shell
+
+Rare tools live in the flake devShell (not home-manager). From a checkout:
+
+```text
+nix develop
+# or: direnv allow  (once; then cd into the repo)
+```
+
+Today that shell is mainly **Grok**. Compose/sops CLIs can join the same shell later.
+
 ## Secrets
 
 All secrets are **sops + age** under `secrets/` (see `.sops.yaml`):
