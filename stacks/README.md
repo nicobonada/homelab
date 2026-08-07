@@ -7,7 +7,6 @@ root; this directory is **apps only** and is deployed separately.
 
 | Directory | Stack |
 |-----------|--------|
-| `arcane/` | Optional Docker UI |
 | `grimmory/` | Library app + MariaDB |
 | `papra/` | Documents |
 | `homepage/` | Dashboard (+ `config/`) |

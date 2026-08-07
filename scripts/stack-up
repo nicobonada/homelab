@@ -91,7 +91,7 @@ target=$1
 shift
 
 if [[ $target == --all ]]; then
-  for s in arcane grimmory papra homepage monitoring; do
+  for s in grimmory papra homepage monitoring; do
     [[ -d $STACKS/$s ]] || continue
     up_one "$s" "$@"
   done

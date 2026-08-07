@@ -4,22 +4,6 @@
 # server/container = Docker status via docker.yaml → local socket
 
 - Lab:
-    - Arcane:
-        icon: sh-arcane
-        href: https://docker.<tailnet>.ts.net
-        description: Docker management
-        siteMonitor: http://<lab-tailscale-ip>:3552
-        server: local
-        container: arcane
-        showStats: true
-        # Optional rich widget — set HOMEPAGE_VAR_ARCANE_KEY in secrets.env
-        # widget:
-        #   type: arcane
-        #   url: http://<lab-tailscale-ip>:3552
-        #   env: 0
-        #   key: "{{HOMEPAGE_VAR_ARCANE_KEY}}"
-        #   fields: ["running", "stopped", "total", "image_updates"]
-
     - Proxmox:
         icon: sh-proxmox
         href: https://pve.<tailnet>.ts.net/
