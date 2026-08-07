@@ -34,14 +34,18 @@ jj git push --bookmark main
 
 ### Homelab host
 
+Public clone (HTTPS works without a deploy key on the VM):
+
 ```fish
 cd ~/homelab-deploy
 git pull --ff-only
-nh os switch .
-# or: sudo nixos-rebuild switch --flake .#homelab
+# NOPASSWD is scoped to full store paths — prefer:
+sudo -n /run/current-system/sw/bin/nixos-rebuild switch --flake .#homelab
+# or:
+sudo -n /run/current-system/sw/bin/nh os switch .
 ```
 
-Optional: `set -x NH_FLAKE /home/nico/homelab-deploy` so bare `nh os switch` targets this tree.
+Bare `nh os switch` as nico can fail (nested `sudo` wants a TTY). Do **not** use `/etc/nixos`.
 
 ## Offsite backups (vzdump → B2)
 
