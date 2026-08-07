@@ -1,0 +1,18 @@
+# Homepage dashboard
+# Config in git: ./config (rsync'd to host by scripts/stack-up).
+# Secrets: secrets.env on the workstation (gitignored); read by local compose client.
+# Bind mounts are on the *remote* Docker host when using DOCKER_HOST=ssh://…
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - /home/nico/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    env_file:
+      - secrets.env
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: localhost:3000,127.0.0.1:3000,homelab:3000,<lab-tailscale-ip>:3000,homepage.<tailnet>.ts.net,dashboard.<tailnet>.ts.net,*.<tailnet>.ts.net

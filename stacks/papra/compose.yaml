@@ -1,0 +1,14 @@
+# Papra — documents
+# Data: /home/nico/papra/app-data on the host
+# Secrets: copy .env.example → .env
+services:
+  papra:
+    image: ghcr.io/papra-hq/papra:latest-root
+    container_name: papra
+    restart: unless-stopped
+    ports:
+      - "1221:1221"
+    env_file:
+      - .env
+    volumes:
+      - /home/nico/papra/app-data:/app/app-data

@@ -1,0 +1,11 @@
+---
+- Quick:
+    - GitHub:
+        - abbr: GH
+          href: https://github.com/nicobonada
+    - Tailscale ACL:
+        - abbr: ACL
+          href: https://github.com/nicobonada/tailscale-policy
+    - Tailscale Admin:
+        - abbr: TS
+          href: https://login.tailscale.com/admin/machines

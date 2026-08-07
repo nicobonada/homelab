@@ -4,3 +4,8 @@
 
 # accidental local secrets
 token
+
+# Docker stack secrets (never commit)
+stacks/**/.env
+stacks/**/secrets.env
+stacks/**/*-admin.env

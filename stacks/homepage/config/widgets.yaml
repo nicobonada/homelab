@@ -1,0 +1,40 @@
+---
+# Header widgets (left → right; weather/search/datetime sit on the right)
+
+- logo:
+    icon: https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homepage.png
+
+- greeting:
+    text_size: xl
+    text: Homelab
+
+- datetime:
+    text_size: xl
+    format:
+      dateStyle: medium
+      timeStyle: short
+      hourCycle: h23
+
+- search:
+    provider: duckduckgo
+    target: _blank
+
+# Host metrics via Glances (resources widget only sees the Homepage container)
+- glances:
+    url: http://<lab-tailscale-ip>:61208
+    version: 4
+    label: Host
+    cpu: true
+    mem: true
+    uptime: true
+    # / is container root; /host is the bind-mounted host root
+    disk: /host
+    expanded: false
+
+- openmeteo:
+    label: Toronto
+    latitude: 43.65
+    longitude: -79.38
+    timezone: America/Toronto
+    units: metric
+    cache: 5

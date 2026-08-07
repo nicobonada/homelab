@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Apply one (or all) Docker Compose stacks to the lab host from a workstation.
+# NixOS system deploy is separate: nh os switch … --target-host …
+#
+# Usage:
+#   ./scripts/stack-up monitoring
+#   ./scripts/stack-up homepage
+#   ./scripts/stack-up --all
+#   DOCKER_HOST=ssh://nico@homelab ./scripts/stack-up grimmory
+#
+# Requires: docker CLI with compose plugin (e.g. nix shell nixpkgs#docker-client).
+# Secrets: stacks/<name>/.env or secrets.env on this machine (gitignored).
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+STACKS="$ROOT/stacks"
+export DOCKER_HOST="${DOCKER_HOST:-ssh://nico@homelab}"
+
+usage() {
+  echo "usage: $0 <stack>|--all [docker compose up args...]" >&2
+  echo "stacks: $(ls -1 "$STACKS" | tr '\n' ' ')" >&2
+  exit 1
+}
+
+[[ $# -ge 1 ]] || usage
+
+need_docker() {
+  if ! command -v docker >/dev/null; then
+    echo "error: docker not on PATH (try: nix shell nixpkgs#docker-client -c $0 …)" >&2
+    exit 1
+  fi
+  docker compose version >/dev/null
+}
+
+# Bind mounts are resolved on the *remote* daemon. Sync git-managed config there.
+sync_remote_paths() {
+  local stack=$1
+  local host=${DOCKER_HOST#ssh://}
+  case $stack in
+    homepage)
+      # Live layout on the lab host (data stays there; git is source for YAML).
+      ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/homepage/config"
+      rsync -az --delete \
+        "$STACKS/homepage/config/" \
+        "$host:/home/nico/homepage/config/"
+      ;;
+  esac
+}
+
+up_one() {
+  local stack=$1
+  shift
+  local dir="$STACKS/$stack"
+  [[ -d $dir ]] || {
+    echo "error: unknown stack '$stack'" >&2
+    usage
+  }
+  [[ -f $dir/compose.yaml ]] || {
+    echo "error: missing $dir/compose.yaml" >&2
+    exit 1
+  }
+
+  sync_remote_paths "$stack"
+
+  local -a env_args=()
+  if [[ -f $dir/.env ]]; then
+    env_args+=(--env-file "$dir/.env")
+  fi
+  if [[ -f $dir/secrets.env ]]; then
+    env_args+=(--env-file "$dir/secrets.env")
+  fi
+
+  # Warn if examples exist but no secrets yet (compose may still start).
+  if [[ ! -f $dir/.env && -f $dir/.env.example ]]; then
+    echo "note: no $dir/.env — copy from .env.example if the stack needs it" >&2
+  fi
+  if [[ ! -f $dir/secrets.env && -f $dir/secrets.env.example ]]; then
+    echo "note: no $dir/secrets.env — copy from secrets.env.example if needed" >&2
+  fi
+
+  echo "→ $stack  (DOCKER_HOST=$DOCKER_HOST)"
+  (
+    cd "$dir"
+    docker compose "${env_args[@]}" up -d "$@"
+  )
+}
+
+need_docker
+
+target=$1
+shift
+
+if [[ $target == --all ]]; then
+  for s in arcane grimmory papra homepage monitoring; do
+    [[ -d $STACKS/$s ]] || continue
+    up_one "$s" "$@"
+  done
+else
+  up_one "$target" "$@"
+fi

@@ -1,0 +1,21 @@
+---
+title: Homelab
+description: Nico's lab
+theme: dark
+color: slate
+headerStyle: clean
+statusStyle: dot
+target: _blank
+hideVersion: true
+# Expand docker stats when clicking status (also set per-service)
+showStats: false
+layout:
+  Lab:
+    style: row
+    columns: 4
+  Apps:
+    style: row
+    columns: 4
+  Cloud:
+    style: row
+    columns: 4

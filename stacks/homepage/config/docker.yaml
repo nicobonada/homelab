@@ -1,0 +1,4 @@
+---
+# Local Docker (socket mounted into Homepage). Server name must match services.server
+local:
+  socket: /var/run/docker.sock

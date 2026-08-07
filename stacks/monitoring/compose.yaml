@@ -1,0 +1,33 @@
+# Host metrics (Glances) + uptime monitors (Uptime Kuma) for Homepage
+services:
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    restart: unless-stopped
+    pid: host
+    # Bridge + published port so other containers can reach the API.
+    # pid:host still exposes host process/CPU view.
+    ports:
+      - "61208:61208"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/os-release:/etc/os-release:ro
+      - /:/host:ro
+    environment:
+      GLANCES_OPT: "-w -t 2"
+      # Report host root disk via bind mount path inside container
+      # (glances sees /host as a mount; Homepage requests disk: /host)
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  uptime-kuma-data:

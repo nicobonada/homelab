@@ -1,0 +1,111 @@
+---
+# href = browser URL (Tailscale MagicDNS / HTTPS services)
+# siteMonitor = check from *inside Docker* (use host TS IP + published ports)
+# server/container = Docker status via docker.yaml → local socket
+
+- Lab:
+    - Arcane:
+        icon: sh-arcane
+        href: https://docker.<tailnet>.ts.net
+        description: Docker management
+        siteMonitor: http://<lab-tailscale-ip>:3552
+        server: local
+        container: arcane
+        showStats: true
+        # Optional rich widget — set HOMEPAGE_VAR_ARCANE_KEY in secrets.env
+        # widget:
+        #   type: arcane
+        #   url: http://<lab-tailscale-ip>:3552
+        #   env: 0
+        #   key: "{{HOMEPAGE_VAR_ARCANE_KEY}}"
+        #   fields: ["running", "stopped", "total", "image_updates"]
+
+    - Proxmox:
+        icon: sh-proxmox
+        href: https://pve.<tailnet>.ts.net/
+        description: Hypervisor
+        siteMonitor: https://pve.<tailnet>.ts.net/
+        # Optional — set HOMEPAGE_VAR_PVE_TOKEN + HOMEPAGE_VAR_PVE_SECRET
+        # widget:
+        #   type: proxmox
+        #   url: https://pve.<tailnet>.ts.net
+        #   username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
+        #   password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
+        #   node: pve
+        #   fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
+
+    - Technitium:
+        icon: sh-technitium
+        href: https://dns.<tailnet>.ts.net
+        description: DNS / ad blocking
+        siteMonitor: http://<lab-tailscale-ip>:5380
+        # Optional — set HOMEPAGE_VAR_TECHNITIUM_KEY
+        # widget:
+        #   type: technitium
+        #   url: http://<lab-tailscale-ip>:5380
+        #   key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
+        #   range: LastDay
+        #   fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
+
+    - Uptime Kuma:
+        icon: sh-uptime-kuma
+        href: https://status.<tailnet>.ts.net
+        description: Monitor status
+        siteMonitor: http://<lab-tailscale-ip>:3001
+        server: local
+        container: uptime-kuma
+        showStats: true
+        widget:
+          type: uptimekuma
+          url: http://<lab-tailscale-ip>:3001
+          slug: lab
+
+- Apps:
+    - Grimmory:
+        icon: sh-booklore
+        href: https://books.<tailnet>.ts.net/dashboard
+        description: Ebooks
+        siteMonitor: http://<lab-tailscale-ip>:6060
+        server: local
+        container: grimmory
+        showStats: true
+
+    - Papra:
+        icon: sh-papra
+        href: https://docs.<tailnet>.ts.net/
+        description: Documents
+        siteMonitor: http://<lab-tailscale-ip>:1221
+        server: local
+        container: papra
+        showStats: true
+
+    - Homepage:
+        icon: homepage.png
+        href: https://dashboard.<tailnet>.ts.net
+        description: This dashboard
+        siteMonitor: http://<lab-tailscale-ip>:3000
+        server: local
+        container: homepage
+        showStats: true
+
+- Cloud:
+    - Tailscale:
+        icon: sh-tailscale
+        href: https://login.tailscale.com/admin/machines
+        description: VPN / devices
+        # Optional — set HOMEPAGE_VAR_TAILSCALE_KEY (device = this host)
+        # widget:
+        #   type: tailscale
+        #   deviceid: <tailscale-device-id>
+        #   key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
+        #   fields: ["address", "last_seen", "update_available", "hostname"]
+
+    - Cloudflare:
+        icon: sh-cloudflare
+        href: https://dash.cloudflare.com/<cloudflare-account-id>/home/overview
+        description: DNS settings
+
+    - Backblaze:
+        icon: sh-backblaze
+        href: https://secure.backblaze.com/b2_buckets.htm
+        description: B2 / R2 storage

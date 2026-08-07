@@ -1,0 +1,25 @@
+# Arcane — Docker management UI
+# Secrets: copy .env.example → .env (gitignored)
+services:
+  arcane:
+    image: ghcr.io/getarcaneapp/arcane:latest
+    container_name: arcane
+    restart: unless-stopped
+    ports:
+      - "3552:3552"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - arcane-data:/app/data
+    env_file:
+      - .env
+    environment:
+      # Non-secret defaults; override in .env if needed
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_JSON: ${LOG_JSON:-false}
+      OIDC_ENABLED: ${OIDC_ENABLED:-false}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+
+volumes:
+  arcane-data:
+    driver: local
