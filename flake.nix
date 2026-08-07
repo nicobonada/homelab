@@ -22,6 +22,10 @@
       grok-config,
       ...
     }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
     {
       nixosConfigurations.homelab = nixpkgs.lib.nixosSystem {
         modules = [
@@ -32,7 +36,22 @@
       };
 
       # Workstation shell: enter from this repo (`nix develop` / direnv), not global HM.
-      # Expand packages here later (e.g. docker client, sops) for lab ops tools.
-      devShells.x86_64-linux.default = grok-config.devShells.x86_64-linux.default;
+      # Client tools only — compose targets the lab daemon (DOCKER_HOST=ssh://…).
+      devShells.${system}.default = pkgs.mkShellNoCC {
+        packages = [
+          grok-config.packages.${system}.grok
+        ]
+        ++ (with pkgs; [
+          docker-client
+          docker-compose # CLI plugin so `docker compose` works
+          sops
+        ]);
+        shellHook = ''
+          # Prefer the writable checkout so rules/skills edits land in git.
+          if [ -x "$HOME/src/grok-config/scripts/ensure-grok-home" ]; then
+            "$HOME/src/grok-config/scripts/ensure-grok-home" || true
+          fi
+        '';
+      };
     };
 }

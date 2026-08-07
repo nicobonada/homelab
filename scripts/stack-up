@@ -38,7 +38,7 @@ usage() {
 
 need_docker() {
   if ! command -v docker >/dev/null; then
-    echo "error: docker not on PATH (try: nix shell nixpkgs#docker-client -c $0 …)" >&2
+    echo "error: docker not on PATH (enter the repo shell: nix develop)" >&2
     exit 1
   fi
   docker compose version >/dev/null

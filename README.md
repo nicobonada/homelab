@@ -22,7 +22,8 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Today that shell is mainly **Grok**. Compose/sops CLIs can join the same shell later.
+Includes **Grok**, Docker **client** + Compose (for `scripts/stack-up` over
+`DOCKER_HOST=ssh://…`), and **sops**. No local Docker daemon required.
 
 ## Secrets
 
