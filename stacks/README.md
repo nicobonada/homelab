@@ -7,14 +7,17 @@ root; this directory is **apps only** and is deployed separately.
 
 | Directory | Stack |
 |-----------|--------|
+| `openbao/` | OpenBao (app secrets target; see that README) |
 | `grimmory/` | Library app + MariaDB |
 | `papra/` | Documents |
 | `homepage/` | Dashboard (+ `config/`) |
 | `monitoring/` | Glances + Uptime Kuma |
 
-Each stack has `compose.yaml`. Secrets are **sops-encrypted** in the repo root
-`secrets/<stack>.env` (same age keys as NixOS secrets). Example templates remain
-as `*.example` for documentation only.
+Each stack has `compose.yaml`. App stack secrets are **sops-encrypted** in the
+repo root `secrets/<stack>.env` (same age keys as NixOS secrets) and stay that
+way until consumers migrate to OpenBao KV. OpenBao itself only keeps
+**unseal + root** in `secrets/openbao.env`. Example templates remain as
+`*.example` for documentation only.
 
 ## Apply from a workstation
 
@@ -27,15 +30,19 @@ into gitignored paths next to compose, then runs `docker compose up`.
 nix shell nixpkgs#docker-client
 
 cd ~/src/homelab
+./scripts/deploy-containers openbao      # start + unseal if secrets/openbao.env exists
 ./scripts/deploy-containers monitoring   # no secrets
 ./scripts/deploy-containers homepage     # sops -d secrets/homepage.env
 ./scripts/deploy-containers grimmory
 # ./scripts/deploy-containers --all
+# First OpenBao init (once): ./scripts/openbao-bootstrap [--seed-from-sops]
 ```
 
-Default remote: `DOCKER_HOST=ssh://nico@homelab` (override if needed).
+Default remote: `DOCKER_HOST=ssh://nico@homelab`
+(override if needed).
 
-Edit secrets: `sops secrets/homepage.env` (etc.).
+Edit secrets: `sops secrets/homepage.env` (etc.). OpenBao bootstrap:
+`sops secrets/openbao.env`.
 
 NixOS system deploys stay separate (`nh os switch` / `nixos-rebuild` with
 `--target-host`).

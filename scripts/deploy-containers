@@ -6,12 +6,14 @@
 # This script decrypts to a gitignored path next to compose before `up`.
 #
 # Usage:
+#   ./scripts/deploy-containers openbao
 #   ./scripts/deploy-containers monitoring
 #   ./scripts/deploy-containers homepage
 #   ./scripts/deploy-containers --all
 #   DOCKER_HOST=ssh://nico@homelab ./scripts/deploy-containers grimmory
 #
 # Requires: docker CLI with compose; sops + age key for stacks that use secrets.
+# OpenBao: first init is scripts/openbao-bootstrap (not this script).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -21,11 +23,14 @@ export DOCKER_HOST="${DOCKER_HOST:-ssh://nico@homelab}"
 
 # Map stack name → decrypted env file path relative to stack dir (compose env_file).
 # Empty = no sops secret file for this stack.
+# openbao: unseal/root stay in secrets/openbao.env and are applied by openbao-unseal
+# (not compose env_file). App stacks keep sops env until Bao migration.
 declare -A STACK_ENV_OUT=(
   [homepage]="secrets.env"
   [grimmory]=".env"
   [papra]=".env"
   [monitoring]=""
+  [openbao]=""
 )
 
 # Stack dirs are those with compose.yaml (ignore README.md and other files).
@@ -93,6 +98,13 @@ sync_remote_paths() {
         "$STACKS/homepage/config/" \
         "$host:/home/nico/homepage/config/"
       ;;
+    openbao)
+      # Dirs as the SSH user (nico). Compose runs as 1000:100 (NixOS users gid).
+      ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/openbao/config /home/nico/openbao/data"
+      rsync -az --delete \
+        "$STACKS/openbao/config/" \
+        "$host:/home/nico/openbao/config/"
+      ;;
   esac
 }
 
@@ -124,6 +136,13 @@ up_one() {
     # compose.yaml may also list env_file: — file was just decrypted into place
     docker compose "${env_args[@]}" up -d "$@"
   )
+
+  # OpenBao starts sealed; unseal from sops bootstrap when present (no-op if missing).
+  if [[ $stack == openbao ]]; then
+    "$ROOT/scripts/openbao-unseal" || {
+      echo "warning: openbao-unseal failed (container is up; fix bootstrap or re-run)" >&2
+    }
+  fi
 }
 
 need_docker
@@ -132,13 +151,18 @@ target=$1
 shift
 
 if [[ $target == --all ]]; then
-  # Prefer a stable order when present; then any other compose stacks.
-  for s in grimmory papra homepage monitoring; do
+  # openbao first so a future consumer could depend on it; app stacks still sops.
+  preferred=(openbao grimmory papra homepage monitoring)
+  for s in "${preferred[@]}"; do
     [[ -f $STACKS/$s/compose.yaml ]] || continue
     up_one "$s" "$@"
   done
   for s in $(list_stacks); do
-    case $s in grimmory|papra|homepage|monitoring) continue ;; esac
+    skip=0
+    for p in "${preferred[@]}"; do
+      [[ $s == "$p" ]] && skip=1 && break
+    done
+    [[ $skip -eq 1 ]] && continue
     up_one "$s" "$@"
   done
 else

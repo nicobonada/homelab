@@ -32,13 +32,14 @@
         ];
       };
 
-      # Workstation shell: compose client + sops (not home-manager). Grok is home-wide.
+      # Workstation shell: compose client + sops + bao (not home-manager). Grok is home-wide.
       # Client tools only — compose targets the lab daemon (DOCKER_HOST=ssh://…).
       devShells.${system}.default = pkgs.mkShellNoCC {
         packages = with pkgs; [
           docker-client
           docker-compose # CLI plugin so `docker compose` works
           sops
+          openbao # `bao` CLI for operator/KV work from the workstation
         ];
       };
     };
