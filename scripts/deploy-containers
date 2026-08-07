@@ -6,10 +6,10 @@
 # This script decrypts to a gitignored path next to compose before `up`.
 #
 # Usage:
-#   ./scripts/stack-up monitoring
-#   ./scripts/stack-up homepage
-#   ./scripts/stack-up --all
-#   DOCKER_HOST=ssh://nico@homelab ./scripts/stack-up grimmory
+#   ./scripts/deploy-containers monitoring
+#   ./scripts/deploy-containers homepage
+#   ./scripts/deploy-containers --all
+#   DOCKER_HOST=ssh://nico@homelab ./scripts/deploy-containers grimmory
 #
 # Requires: docker CLI with compose; sops + age key for stacks that use secrets.
 set -euo pipefail
@@ -28,9 +28,18 @@ declare -A STACK_ENV_OUT=(
   [monitoring]=""
 )
 
+# Stack dirs are those with compose.yaml (ignore README.md and other files).
+list_stacks() {
+  local d
+  for d in "$STACKS"/*/; do
+    [[ -f ${d}compose.yaml ]] || continue
+    basename "$d"
+  done | sort | tr '\n' ' '
+}
+
 usage() {
   echo "usage: $0 <stack>|--all [docker compose up args...]" >&2
-  echo "stacks: $(ls -1 "$STACKS" | tr '\n' ' ')" >&2
+  echo "stacks: $(list_stacks)" >&2
   exit 1
 }
 
@@ -123,8 +132,13 @@ target=$1
 shift
 
 if [[ $target == --all ]]; then
+  # Prefer a stable order when present; then any other compose stacks.
   for s in grimmory papra homepage monitoring; do
-    [[ -d $STACKS/$s ]] || continue
+    [[ -f $STACKS/$s/compose.yaml ]] || continue
+    up_one "$s" "$@"
+  done
+  for s in $(list_stacks); do
+    case $s in grimmory|papra|homepage|monitoring) continue ;; esac
     up_one "$s" "$@"
   done
 else

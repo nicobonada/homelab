@@ -1,5 +1,5 @@
 # Homepage dashboard
-# Config in git: ./config (rsync'd to host by scripts/stack-up).
+# Config in git: ./config (rsync'd to host by scripts/deploy-containers).
 # Secrets: secrets.env on the workstation (gitignored); read by local compose client.
 # Bind mounts are on the *remote* Docker host when using DOCKER_HOST=ssh://…
 services:

@@ -22,7 +22,7 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Includes Docker **client** + Compose (for `scripts/stack-up` over
+Includes Docker **client** + Compose (for `scripts/deploy-containers` over
 `DOCKER_HOST=ssh://…`) and **sops**. No local Docker daemon required.
 **Grok** is on the interactive PATH via home-manager (not this shell).
 
@@ -42,7 +42,7 @@ lab IPs / MagicDNS names stay in sops, not in public git. See
 `stacks/homepage/secrets.env.example`.
 
 Edit: `sops secrets/<name>.env` (or `.yaml`). Decrypted copies under `stacks/` are
-gitignored and produced by `scripts/stack-up`.
+gitignored and produced by `scripts/deploy-containers`.
 
 ## License
 
