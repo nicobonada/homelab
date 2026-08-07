@@ -2,19 +2,31 @@
 # Apply one (or all) Docker Compose stacks to the lab host from a workstation.
 # NixOS system deploy is separate: nh os switch … --target-host …
 #
+# Secrets: sops-encrypted under secrets/<stack>.env (same age keys as sops-nix).
+# This script decrypts to a gitignored path next to compose before `up`.
+#
 # Usage:
 #   ./scripts/stack-up monitoring
 #   ./scripts/stack-up homepage
 #   ./scripts/stack-up --all
 #   DOCKER_HOST=ssh://nico@homelab ./scripts/stack-up grimmory
 #
-# Requires: docker CLI with compose plugin (e.g. nix shell nixpkgs#docker-client).
-# Secrets: stacks/<name>/.env or secrets.env on this machine (gitignored).
+# Requires: docker CLI with compose; sops + age key for stacks that use secrets.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 STACKS="$ROOT/stacks"
+SECRETS="$ROOT/secrets"
 export DOCKER_HOST="${DOCKER_HOST:-ssh://nico@homelab}"
+
+# Map stack name → decrypted env file path relative to stack dir (compose env_file).
+# Empty = no sops secret file for this stack.
+declare -A STACK_ENV_OUT=(
+  [homepage]="secrets.env"
+  [grimmory]=".env"
+  [papra]=".env"
+  [monitoring]=""
+)
 
 usage() {
   echo "usage: $0 <stack>|--all [docker compose up args...]" >&2
@@ -32,15 +44,43 @@ need_docker() {
   docker compose version >/dev/null
 }
 
+# Decrypt secrets/<stack>.env → stacks/<stack>/<out> (gitignored).
+decrypt_stack_env() {
+  local stack=$1
+  local out_name=${STACK_ENV_OUT[$stack]-}
+  local enc="$SECRETS/${stack}.env"
+  local out_dir="$STACKS/$stack"
+  local out_path
+
+  if [[ -z $out_name ]]; then
+    return 0
+  fi
+  out_path="$out_dir/$out_name"
+
+  if [[ ! -f $enc ]]; then
+    echo "error: missing encrypted secrets $enc (create with: sops $enc)" >&2
+    exit 1
+  fi
+  if ! command -v sops >/dev/null; then
+    echo "error: sops not on PATH (needed to decrypt $enc)" >&2
+    exit 1
+  fi
+
+  umask 077
+  sops -d "$enc" >"$out_path"
+  chmod 600 "$out_path"
+}
+
 # Bind mounts are resolved on the *remote* daemon. Sync git-managed config there.
 sync_remote_paths() {
   local stack=$1
   local host=${DOCKER_HOST#ssh://}
   case $stack in
     homepage)
-      # Live layout on the lab host (data stays there; git is source for YAML).
       ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/homepage/config"
+      # Exclude runtime logs (container may own them; not in git).
       rsync -az --delete \
+        --exclude logs/ \
         "$STACKS/homepage/config/" \
         "$host:/home/nico/homepage/config/"
       ;;
@@ -60,27 +100,19 @@ up_one() {
     exit 1
   }
 
+  decrypt_stack_env "$stack"
   sync_remote_paths "$stack"
 
   local -a env_args=()
-  if [[ -f $dir/.env ]]; then
-    env_args+=(--env-file "$dir/.env")
-  fi
-  if [[ -f $dir/secrets.env ]]; then
-    env_args+=(--env-file "$dir/secrets.env")
-  fi
-
-  # Warn if examples exist but no secrets yet (compose may still start).
-  if [[ ! -f $dir/.env && -f $dir/.env.example ]]; then
-    echo "note: no $dir/.env — copy from .env.example if the stack needs it" >&2
-  fi
-  if [[ ! -f $dir/secrets.env && -f $dir/secrets.env.example ]]; then
-    echo "note: no $dir/secrets.env — copy from secrets.env.example if needed" >&2
+  local out_name=${STACK_ENV_OUT[$stack]-}
+  if [[ -n $out_name && -f $dir/$out_name ]]; then
+    env_args+=(--env-file "$dir/$out_name")
   fi
 
   echo "→ $stack  (DOCKER_HOST=$DOCKER_HOST)"
   (
     cd "$dir"
+    # compose.yaml may also list env_file: — file was just decrypted into place
     docker compose "${env_args[@]}" up -d "$@"
   )
 }

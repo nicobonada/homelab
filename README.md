@@ -15,10 +15,17 @@ Uses [Determinate Nix](https://determinate.systems/) and
 
 ## Secrets
 
-NixOS secrets: sops + age under `secrets/` (see `.sops.yaml`).
+All secrets are **sops + age** under `secrets/` (see `.sops.yaml`):
 
-Compose secrets: `stacks/*/.env` and `stacks/*/secrets.env` (gitignored);
-start from each stack’s `*.example` files.
+| File | Used by |
+|------|---------|
+| `secrets/vzdump-b2.yaml` | NixOS vzdump→B2 (sops-nix at activation) |
+| `secrets/homepage.env` | Homepage widgets (`scripts/stack-up` decrypts) |
+| `secrets/grimmory.env` | Grimmory + MariaDB |
+| `secrets/papra.env` | Papra |
+
+Edit: `sops secrets/<name>.env` (or `.yaml`). Decrypted copies under `stacks/` are
+gitignored and produced by `scripts/stack-up`.
 
 ## License
 

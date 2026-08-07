@@ -12,31 +12,30 @@ root; this directory is **apps only** and is deployed separately.
 | `homepage/` | Dashboard (+ `config/`) |
 | `monitoring/` | Glances + Uptime Kuma |
 
-Each stack has `compose.yaml` and `*.example` env files. Real `.env` /
-`secrets.env` are gitignored.
+Each stack has `compose.yaml`. Secrets are **sops-encrypted** in the repo root
+`secrets/<stack>.env` (same age keys as NixOS secrets). Example templates remain
+as `*.example` for documentation only.
 
 ## Apply from a workstation
 
 Uses the Docker CLI against the lab daemon over SSH (`DOCKER_HOST`). You do
-not need a compose checkout on the server.
+not need a compose checkout on the server. `stack-up` decrypts sops env files
+into gitignored paths next to compose, then runs `docker compose up`.
 
 ```fish
-# docker client, e.g.:
+# docker client + sops on PATH
 nix shell nixpkgs#docker-client
 
 cd ~/src/homelab
-cp stacks/monitoring/.env.example stacks/monitoring/.env   # once, if needed
-./scripts/stack-up monitoring
-./scripts/stack-up homepage
+./scripts/stack-up monitoring   # no secrets
+./scripts/stack-up homepage     # sops -d secrets/homepage.env
+./scripts/stack-up grimmory
 # ./scripts/stack-up --all
 ```
 
 Default remote: `DOCKER_HOST=ssh://nico@homelab` (override if needed).
 
+Edit secrets: `sops secrets/homepage.env` (etc.).
+
 NixOS system deploys stay separate (`nh os switch` / `nixos-rebuild` with
 `--target-host`).
-
-## Secrets
-
-Copy each stack’s example env file and fill in values **on the workstation**
-(or another private store). Do not commit them.
