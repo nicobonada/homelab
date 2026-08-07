@@ -1,59 +1,85 @@
 # homelab
 
-Personal [NixOS](https://nixos.org/) configuration for a small QEMU/KVM VM (`nixosConfigurations.homelab`).
+Personal [NixOS](https://nixos.org/) for the **homelab** QEMU/KVM VM
+(`nixosConfigurations.homelab`).
 
-Working personal config, not a template — steal ideas freely. Details live in the Nix files; this README only covers what does not age well next to the code.
+Working personal config, not a template — steal ideas freely.
 
-Uses [Determinate Nix](https://determinate.systems/) (same family as the workstations). Layout: `configuration.nix` + `hardware-configuration.nix`, with `vzdump-b2.nix` for offsite Proxmox dump sync.
+Docker Compose stacks live in a **separate** repo (`homelab-stacks`), not here.
+This flake is **system only**: boot, network, Docker engine, sops, vzdump→B2, etc.
+
+## Layout
+
+| File | Role |
+|------|------|
+| `flake.nix` | nixpkgs 26.05, Determinate Nix, sops-nix |
+| `configuration.nix` | Host services (docker, ssh, samba off, nh, sudo) |
+| `hardware-configuration.nix` | Disks / EFI for this VM |
+| `vzdump-b2.nix` | Virtiofs dump tree → rclone B2 timer |
+| `secrets/` | sops-encrypted secrets (age) |
 
 ## Secrets
 
-Secrets live **in this repo**, encrypted with [sops-nix](https://github.com/Mic92/sops-nix) + age (`secrets/`, `.sops.yaml`).
+- Edit on a workstation: `sops secrets/<file>.yaml` (personal age key).
+- At activation, sops-nix decrypts with the **host SSH age key**
+  (`/etc/ssh/ssh_host_ed25519_key` → age recipient in `.sops.yaml`).
+- Do not commit plaintext keys or B2 tokens.
 
-- Edit from a workstation: `sops secrets/<file>.yaml` (personal age key).
-- System activation decrypts with the **host SSH age key** (root cannot read `~/.config/sops/age/keys.txt`).
-- Tailscale, Samba, and other machine bootstrap stay off-repo.
+## Deploy (from a workstation)
 
-## Deploy
+**Source of truth:** this repo on oakhill/seyruun (`~/src/homelab`), pushed to
+GitHub. **Do not** keep a long-lived config checkout on the VM for day-to-day
+applies. **Do not** use `/etc/nixos` (ancient leftover).
 
-| Where | Role |
-|-------|------|
-| **oakhill / seyruun** `~/src/homelab` | Edit with **jj**; push `main` to GitHub |
-| **homelab** `~/homelab-deploy` | **git** only: pull + switch (no jj) |
-
-**Do not** use `/etc/nixos` — that tree is an ancient leftover.
-
-### Workstation
+Both machines are `x86_64-linux`. Build on the workstation, activate over SSH:
 
 ```fish
 cd ~/src/homelab
-# edit… record on wip, land, then:
-jj git fetch
-jj git push --bookmark main
+# after edits: record, land, push main (jj) as usual
+
+nh os switch . \
+  --hostname homelab \
+  --target-host nico@homelab \
+  --elevation-strategy passwordless
 ```
 
-### Homelab host
-
-Public clone (HTTPS works without a deploy key on the VM):
+Equivalent with stock tools:
 
 ```fish
-cd ~/homelab-deploy
-git pull --ff-only
-# NOPASSWD is scoped to full store paths — prefer:
-sudo -n /run/current-system/sw/bin/nixos-rebuild switch --flake .#homelab
-# or:
-sudo -n /run/current-system/sw/bin/nh os switch .
+nixos-rebuild switch --flake .#homelab \
+  --target-host nico@homelab \
+  --elevate sudo
 ```
 
-Bare `nh os switch` as nico can fail (nested `sudo` wants a TTY). Do **not** use `/etc/nixos`.
+Requires:
+
+- SSH as **`nico@homelab`** (Tailscale or LAN)
+- `wheelNeedsPassword = false` for `nico` (this flake) so remote
+  `nixos-rebuild`/`nh` activation can elevate without a TTY
+- `PermitRootLogin = no` — deploy is user SSH + sudo, not root login
+
+`jj` stays on the workstation. The VM only needs git if you choose to clone for
+recovery; normal deploys never pull on the host.
 
 ## Offsite backups (vzdump → B2)
 
-Proxmox writes dumps on the hypervisor at `/mnt/backup` (USB **Samsung T7 Shield**, not the flaky SanDisk Extreme). This VM mounts that tree **read-only via virtio-fs** (Directory Mapping id `pve-backup`) and runs `vzdump-b2` (rclone + sops) on a daily timer. Do not run the old PVE `rclone-backup` unit in parallel. Virtiofs is not hot-pluggable — reboot the guest after attaching the share. See `vzdump-b2.nix` for mount path, bucket, and timer.
+Proxmox writes dumps on the hypervisor at `/mnt/backup` (USB **Samsung T7
+Shield**). This guest mounts that tree **read-only via virtio-fs** (Directory
+Mapping id **`pve-backup`**) and runs the `vzdump-b2` timer (rclone + sops).
 
-Do **not** SCSI/USB-passthrough the T7 into this guest — the host owns it for `vzdump`.
+- Not hot-pluggable: reboot the guest after attaching the mapping.
+- Do **not** passthrough the T7 USB into the guest.
+- Do **not** run the old PVE `rclone-backup` unit in parallel.
+- One-shot PVE disk migration (run on **PVE as root**, not this guest):
+  `scripts/pve-migrate-backup-to-t7.sh`
 
-One-shot PVE disk migration notes: `scripts/pve-migrate-backup-to-t7.sh` (run on the **Proxmox host** as root, not in this guest).
+## Related
+
+| Repo / path | Purpose |
+|-------------|---------|
+| `nicobonada/homelab` (this) | NixOS system for the VM |
+| `homelab-stacks` | Docker Compose / Arcane projects |
+| Workstations `nix-config` | oakhill / seyruun HM + NixOS |
 
 ## License
 

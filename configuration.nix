@@ -111,28 +111,12 @@
 
   security.sudo = {
     enable = true;
-    # Scoped elevation for rebuilds + offsite backup ops (agents / scripts).
-    extraRules = [
-      {
-        users = [ "nico" ];
-        commands = map (command: {
-          inherit command;
-          options = [ "NOPASSWD" ];
-        }) [
-          "/run/current-system/sw/bin/nh"
-          "/run/current-system/sw/bin/nixos-rebuild"
-          # vzdump-b2 is a system unit (sops secrets are root-only).
-          "/run/current-system/sw/bin/systemctl start vzdump-b2.service"
-          "/run/current-system/sw/bin/systemctl start --no-block vzdump-b2.service"
-          "/run/current-system/sw/bin/systemctl start vzdump-b2-smoke.service"
-          "/run/current-system/sw/bin/systemctl stop vzdump-b2.service"
-          "/run/current-system/sw/bin/systemctl stop vzdump-b2.timer"
-          "/run/current-system/sw/bin/systemctl start vzdump-b2.timer"
-          "/run/current-system/sw/bin/systemctl status vzdump-b2.service"
-          "/run/current-system/sw/bin/systemctl reset-failed vzdump-b2.service"
-        ];
-      }
-    ];
+    # Single-admin VM: workstations deploy with
+    #   nh os switch . -H homelab --target-host nico@homelab -e passwordless
+    # (or nixos-rebuild --target-host … --elevate sudo). Remote activation runs
+    # `sudo sh -c 'nix-env …'` / switch-to-configuration — path-exact NOPASSWD
+    # rules cannot cover that. Root SSH stays off (PermitRootLogin = no).
+    wheelNeedsPassword = false;
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
