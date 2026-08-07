@@ -15,4 +15,5 @@ services:
     env_file:
       - secrets.env
     environment:
-      HOMEPAGE_ALLOWED_HOSTS: localhost:3000,127.0.0.1:3000,homelab:3000,<lab-tailscale-ip>:3000,homepage.<tailnet>.ts.net,dashboard.<tailnet>.ts.net,*.<tailnet>.ts.net
+      # Host allowlist — set HOMEPAGE_ALLOWED_HOSTS in secrets.env (sops)
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}

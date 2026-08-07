@@ -21,7 +21,7 @@
 
 # Host metrics via Glances (resources widget only sees the Homepage container)
 - glances:
-    url: http://<lab-tailscale-ip>:61208
+    url: "{{HOMEPAGE_VAR_GLANCES_HTTP}}"
     version: 4
     label: Host
     cpu: true

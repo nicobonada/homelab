@@ -1,18 +1,18 @@
 ---
-# href = browser URL (Tailscale MagicDNS / HTTPS services)
-# siteMonitor = check from *inside Docker* (use host TS IP + published ports)
+# href / siteMonitor / widget urls use HOMEPAGE_VAR_* (see secrets.env.example).
+# Real hosts/IPs live in sops secrets/homepage.env — not in this public tree.
 # server/container = Docker status via docker.yaml → local socket
 
 - Lab:
     - Proxmox:
         icon: sh-proxmox
-        href: https://pve.<tailnet>.ts.net/
+        href: "{{HOMEPAGE_VAR_PVE_URL}}"
         description: Hypervisor
-        siteMonitor: https://pve.<tailnet>.ts.net/
+        siteMonitor: "{{HOMEPAGE_VAR_PVE_URL}}"
         # Optional — set HOMEPAGE_VAR_PVE_TOKEN + HOMEPAGE_VAR_PVE_SECRET
         # widget:
         #   type: proxmox
-        #   url: https://pve.<tailnet>.ts.net
+        #   url: "{{HOMEPAGE_VAR_PVE_URL}}"
         #   username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
         #   password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
         #   node: pve
@@ -20,54 +20,54 @@
 
     - Technitium:
         icon: sh-technitium
-        href: https://dns.<tailnet>.ts.net
+        href: "{{HOMEPAGE_VAR_DNS_URL}}"
         description: DNS / ad blocking
-        siteMonitor: http://<lab-tailscale-ip>:5380
+        siteMonitor: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
         # Optional — set HOMEPAGE_VAR_TECHNITIUM_KEY
         # widget:
         #   type: technitium
-        #   url: http://<lab-tailscale-ip>:5380
+        #   url: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
         #   key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
         #   range: LastDay
         #   fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
     - Uptime Kuma:
         icon: sh-uptime-kuma
-        href: https://status.<tailnet>.ts.net
+        href: "{{HOMEPAGE_VAR_STATUS_URL}}"
         description: Monitor status
-        siteMonitor: http://<lab-tailscale-ip>:3001
+        siteMonitor: "{{HOMEPAGE_VAR_KUMA_HTTP}}"
         server: local
         container: uptime-kuma
         showStats: true
         widget:
           type: uptimekuma
-          url: http://<lab-tailscale-ip>:3001
+          url: "{{HOMEPAGE_VAR_KUMA_HTTP}}"
           slug: lab
 
 - Apps:
     - Grimmory:
         icon: sh-booklore
-        href: https://books.<tailnet>.ts.net/dashboard
+        href: "{{HOMEPAGE_VAR_BOOKS_URL}}"
         description: Ebooks
-        siteMonitor: http://<lab-tailscale-ip>:6060
+        siteMonitor: "{{HOMEPAGE_VAR_GRIMMORY_HTTP}}"
         server: local
         container: grimmory
         showStats: true
 
     - Papra:
         icon: sh-papra
-        href: https://docs.<tailnet>.ts.net/
+        href: "{{HOMEPAGE_VAR_DOCS_URL}}"
         description: Documents
-        siteMonitor: http://<lab-tailscale-ip>:1221
+        siteMonitor: "{{HOMEPAGE_VAR_PAPRA_HTTP}}"
         server: local
         container: papra
         showStats: true
 
     - Homepage:
         icon: homepage.png
-        href: https://dashboard.<tailnet>.ts.net
+        href: "{{HOMEPAGE_VAR_DASHBOARD_URL}}"
         description: This dashboard
-        siteMonitor: http://<lab-tailscale-ip>:3000
+        siteMonitor: "{{HOMEPAGE_VAR_HOMEPAGE_HTTP}}"
         server: local
         container: homepage
         showStats: true
@@ -80,13 +80,13 @@
         # Optional — set HOMEPAGE_VAR_TAILSCALE_KEY (device = this host)
         # widget:
         #   type: tailscale
-        #   deviceid: <tailscale-device-id>
+        #   deviceid: "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}"
         #   key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
         #   fields: ["address", "last_seen", "update_available", "hostname"]
 
     - Cloudflare:
         icon: sh-cloudflare
-        href: https://dash.cloudflare.com/<cloudflare-account-id>/home/overview
+        href: https://dash.cloudflare.com/
         description: DNS settings
 
     - Backblaze:
