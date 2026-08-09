@@ -181,11 +181,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1786235210,
-        "narHash": "sha256-pRER1bZ1M/7ISJb19KNP1JqRGHgAquRCN/ci7vfs27I=",
+        "lastModified": 1786248616,
+        "narHash": "sha256-Nq8Rlr9gLF9RdGfVkNic2wJ30Mav2iRUNR5VOTFZ1ag=",
         "ref": "refs/heads/main",
-        "rev": "0efcab36da4a50606bde2e981b6cf6baf06835bf",
-        "revCount": 68,
+        "rev": "e6f1e3462d2eba6f3e18a46b0646d5d2e4b14833",
+        "revCount": 70,
         "type": "git",
         "url": "ssh://git@github.com/nicobonada/grok-config.git"
       },
