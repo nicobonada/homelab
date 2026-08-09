@@ -22,8 +22,9 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Includes **Grok**, Docker **client** + Compose (for `scripts/stack-up` over
-`DOCKER_HOST=ssh://…`), and **sops**. No local Docker daemon required.
+Includes Docker **client** + Compose (for `scripts/stack-up` over
+`DOCKER_HOST=ssh://…`) and **sops**. No local Docker daemon required.
+**Grok** is on the interactive PATH via home-manager (not this shell).
 
 ## Secrets
 
