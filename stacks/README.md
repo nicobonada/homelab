@@ -38,8 +38,7 @@ cd ~/src/homelab
 # First OpenBao init (once): ./scripts/openbao-bootstrap [--seed-from-sops]
 ```
 
-Default remote: `DOCKER_HOST=ssh://nico@homelab`
-(override if needed).
+Default remote: the repo devShell sets `DOCKER_HOST=ssh://nico@homelab` (override if needed).
 
 Edit secrets: `sops secrets/homepage.env` (etc.). OpenBao bootstrap:
 `sops secrets/openbao.env`.

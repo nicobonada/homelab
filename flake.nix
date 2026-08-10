@@ -3,8 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-    # Same Determinate Nix stack as workstations (lazy trees / faster eval).
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    # Same DetSys pin as nix-config workstations (already on this seat's store).
+    # Do not float `*` — FlakeHub can resolve to a newer minor (e.g. 3.22) and
+    # every `nix develop` / direnv load fetches it even though the shell only
+    # uses nixpkgs packages. Bump in lockstep with nix-config when ready.
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/=3.21.9";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -33,7 +36,7 @@
       };
 
       # Workstation shell: compose client + sops + bao (not home-manager). Grok is home-wide.
-      # Client tools only — compose targets the lab daemon (DOCKER_HOST=ssh://…).
+      # Client tools only — no local Docker daemon; CLI targets the lab over SSH.
       devShells.${system}.default = pkgs.mkShellNoCC {
         packages = with pkgs; [
           docker-client
@@ -41,6 +44,8 @@
           sops
           openbao # `bao` CLI for operator/KV work from the workstation
         ];
+        # So `docker container ls` / compose hit the lab by default (override if needed).
+        DOCKER_HOST = "ssh://nico@homelab";
       };
     };
 }

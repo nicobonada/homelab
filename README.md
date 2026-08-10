@@ -22,8 +22,9 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Includes Docker **client** + Compose (for `scripts/deploy-containers` over
-`DOCKER_HOST=ssh://…`), **sops**, and **`bao`**. No local Docker daemon required.
+Includes Docker **client** + Compose, **sops**, and **`bao`**. The shell
+sets `DOCKER_HOST=ssh://nico@homelab` so plain `docker` / `docker compose` talk to
+the lab (override for a local daemon if you ever need one).
 **Grok** is on the interactive PATH via home-manager (not this shell).
 
 ## Secrets
