@@ -11,7 +11,7 @@ root; this directory is **apps only** and is deployed separately.
 | `grimmory/` | Library app + MariaDB |
 | `papra/` | Documents |
 | `homepage/` | Dashboard (+ `config/`) |
-| `monitoring/` | Glances + Uptime Kuma |
+| `monitoring/` | Glances + Gatus |
 
 Each stack has `compose.yaml`. App stack secrets are **sops-encrypted** in the
 repo root `secrets/<stack>.env` (same age keys as NixOS secrets) and stay that
@@ -31,7 +31,7 @@ nix shell nixpkgs#docker-client
 
 cd ~/src/homelab
 ./scripts/deploy-containers openbao      # start + unseal if secrets/openbao.env exists
-./scripts/deploy-containers monitoring   # no secrets
+./scripts/deploy-containers monitoring   # sops -d secrets/monitoring.env
 ./scripts/deploy-containers homepage     # sops -d secrets/homepage.env
 ./scripts/deploy-containers grimmory
 # ./scripts/deploy-containers --all

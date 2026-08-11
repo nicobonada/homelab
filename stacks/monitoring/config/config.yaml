@@ -1,0 +1,78 @@
+# Lab health checks. URLs come from env (sops → stacks/monitoring/.env).
+# Co-located apps: host.docker.internal (compose extra_hosts). Remote: MagicDNS.
+# See README.
+#
+# Open follow-up: wire `alerting:` once we pick a notify channel (ntfy, email, …).
+# No providers configured yet on purpose.
+#
+# Always require [CONNECTED] — a failed dial leaves [STATUS] empty, and
+# "[STATUS] < 400" would otherwise pass (false green).
+
+storage:
+  type: sqlite
+  path: /data/gatus.db
+  caching: true
+
+# Container listens on 8080; host publish is 3001:8080 (see compose / README).
+web:
+  port: 8080
+
+ui:
+  title: Lab status
+  header: Lab
+  description: Homelab endpoint health
+  dark-mode: true
+  default-sort-by: group
+
+# Check interval matches former Kuma 60s monitors.
+endpoints:
+  - name: homepage
+    group: lab
+    url: "${GATUS_URL_HOMEPAGE}"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 400"
+
+  - name: grimmory
+    group: lab
+    url: "${GATUS_URL_GRIMMORY}"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 400"
+
+  - name: papra
+    group: lab
+    url: "${GATUS_URL_PAPRA}"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 400"
+
+  - name: glances
+    group: lab
+    url: "${GATUS_URL_GLANCES}"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] == 200"
+
+  - name: technitium
+    group: infra
+    url: "${GATUS_URL_TECHNITIUM}"
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 400"
+
+  - name: proxmox
+    group: infra
+    url: "${GATUS_URL_PROXMOX}"
+    interval: 60s
+    client:
+      # Lab PVE UI often uses a self-signed cert over Tailscale.
+      insecure: true
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 400"

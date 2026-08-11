@@ -31,18 +31,17 @@
         #   range: LastDay
         #   fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
-    - Uptime Kuma:
-        icon: sh-uptime-kuma
+    - Gatus:
+        icon: sh-gatus
         href: "{{HOMEPAGE_VAR_STATUS_URL}}"
         description: Monitor status
-        siteMonitor: "{{HOMEPAGE_VAR_KUMA_HTTP}}"
+        siteMonitor: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
         server: local
-        container: uptime-kuma
+        container: gatus
         showStats: true
         widget:
-          type: uptimekuma
-          url: "{{HOMEPAGE_VAR_KUMA_HTTP}}"
-          slug: lab
+          type: gatus
+          url: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
 
 - Apps:
     - Grimmory:

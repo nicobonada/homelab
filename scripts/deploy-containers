@@ -29,7 +29,7 @@ declare -A STACK_ENV_OUT=(
   [homepage]="secrets.env"
   [grimmory]=".env"
   [papra]=".env"
-  [monitoring]=""
+  [monitoring]=".env"
   [openbao]=""
 )
 
@@ -97,6 +97,12 @@ sync_remote_paths() {
         --exclude logs/ \
         "$STACKS/homepage/config/" \
         "$host:/home/nico/homepage/config/"
+      ;;
+    monitoring)
+      ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/monitoring/config"
+      rsync -az --delete \
+        "$STACKS/monitoring/config/" \
+        "$host:/home/nico/monitoring/config/"
       ;;
     openbao)
       # Dirs as the SSH user (nico). Compose runs as 1000:100 (NixOS users gid).

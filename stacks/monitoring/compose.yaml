@@ -1,4 +1,6 @@
-# Host metrics (Glances) + uptime monitors (Uptime Kuma) for Homepage
+# Host metrics (Glances) + health checks / status UI (Gatus) for Homepage.
+# Gatus config is rsync'd to the lab host by scripts/deploy-containers
+# (bind mounts resolve on the remote daemon when DOCKER_HOST=ssh://…).
 services:
   glances:
     image: nicolargo/glances:latest-full
@@ -18,16 +20,23 @@ services:
       # Report host root disk via bind mount path inside container
       # (glances sees /host as a mount; Homepage requests disk: /host)
 
-  uptime-kuma:
-    image: louislam/uptime-kuma:1
-    container_name: uptime-kuma
+  gatus:
+    image: ghcr.io/twin/gatus:stable
+    container_name: gatus
     restart: unless-stopped
+    # Bridge + publish (same pattern as former Kuma / Glances). Host-network
+    # Gatus was not reachable from the Homepage container (widget ETIMEDOUT to
+    # the lab tailnet IP). Host port 3001 kept for Serve / bookmarks.
     ports:
-      - "3001:3001"
+      - "3001:8080"
+    env_file:
+      - .env
     volumes:
-      - uptime-kuma-data:/app/data
+      - /home/nico/monitoring/config:/config:ro
+      - gatus-data:/data
+    # Reach other lab listeners on the host (Homepage, apps, Glances, …).
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
 volumes:
-  uptime-kuma-data:
+  gatus-data:
