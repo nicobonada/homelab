@@ -22,10 +22,15 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Includes Docker **client** + Compose and **sops** (for NixOS host secrets).
-The shell sets `DOCKER_HOST=ssh://nico@homelab` so plain `docker` /
-`docker compose` talk to the lab. **Grok** is on the interactive PATH via
-home-manager (not this shell).
+Includes Docker **client** + Compose, **sops** (for NixOS host secrets),
+and Docker TUIs (**lazydocker**, **ctop**). The shell sets
+`DOCKER_HOST=ssh://nico@homelab` so `docker`, `lazydocker`, and `ctop`
+talk to the lab. **Grok** is on the interactive PATH via home-manager
+(not this shell).
+
+`lazydocker` is patched to use Docker’s SSH dial-stdio path (like the Docker
+CLI) instead of streamlocal-forwarding `/var/run/docker.sock`, so it works over
+Tailscale SSH.
 
 ## Secrets
 

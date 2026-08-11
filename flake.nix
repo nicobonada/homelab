@@ -25,6 +25,14 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      # Upstream lazydocker tunnels ssh:// via streamlocal to /var/run/docker.sock,
+      # which Tailscale SSH rejects. Use Docker CLI connhelper (dial-stdio) instead.
+      # Patch against nixpkgs lazydocker; source also in ~/src/lazydocker feat/ssh-dial-stdio.
+      lazydocker = pkgs.lazydocker.overrideAttrs (old: {
+        patches = (old.patches or [ ]) ++ [
+          ./packages/patches/lazydocker-ssh-dial-stdio.patch
+        ];
+      });
     in
     {
       nixosConfigurations.homelab = nixpkgs.lib.nixosSystem {
@@ -35,16 +43,19 @@
         ];
       };
 
-      # Workstation shell: compose client + sops (host secrets). Grok is home-wide.
-      # Client tools only — no local Docker daemon; CLI targets the lab over SSH.
-      # Compose deploy secrets come from 1Password Environment Homelab (not this shell).
+      # Workstation shell: compose client + sops (host secrets) + Docker TUIs.
+      # Grok is home-wide. Client tools only — no local Docker daemon; CLI targets
+      # the lab over SSH. Compose deploy secrets come from 1Password Environment
+      # Homelab (not this shell).
       devShells.${system}.default = pkgs.mkShellNoCC {
         packages = with pkgs; [
           docker-client
           docker-compose # CLI plugin so `docker compose` works
           sops # NixOS host secrets only (e.g. vzdump-b2)
+          lazydocker # day-to-day containers/logs/restart (ssh via dial-stdio)
+          ctop # live container metrics
         ];
-        # So `docker container ls` / compose hit the lab by default (override if needed).
+        # So `docker` / lazydocker / ctop hit the lab by default (override if needed).
         DOCKER_HOST = "ssh://nico@homelab";
       };
     };
