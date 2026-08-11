@@ -35,14 +35,14 @@
         ];
       };
 
-      # Workstation shell: compose client + sops + bao (not home-manager). Grok is home-wide.
+      # Workstation shell: compose client + sops (host secrets). Grok is home-wide.
       # Client tools only — no local Docker daemon; CLI targets the lab over SSH.
+      # Compose deploy secrets come from 1Password Environment Homelab (not this shell).
       devShells.${system}.default = pkgs.mkShellNoCC {
         packages = with pkgs; [
           docker-client
           docker-compose # CLI plugin so `docker compose` works
-          sops
-          openbao # `bao` CLI for operator/KV work from the workstation
+          sops # NixOS host secrets only (e.g. vzdump-b2)
         ];
         # So `docker container ls` / compose hit the lab by default (override if needed).
         DOCKER_HOST = "ssh://nico@homelab";

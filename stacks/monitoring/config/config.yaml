@@ -1,4 +1,4 @@
-# Lab health checks. URLs come from env (sops → stacks/monitoring/.env).
+# Lab health checks. URLs come from env (1P Homelab → stacks/monitoring/.env).
 # Co-located apps: host.docker.internal (compose extra_hosts). Remote: MagicDNS.
 # See README.
 #

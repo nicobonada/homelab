@@ -9,7 +9,7 @@ the Nix files and compose files; this README only covers what does not age well
 next to the code.
 
 Uses [Determinate Nix](https://determinate.systems/) and
-[sops-nix](https://github.com/Mic92/sops-nix).
+[sops-nix](https://github.com/Mic92/sops-nix) for **host** secrets only.
 
 **System** (NixOS) and **apps** (Compose) are deployed separately on purpose.
 
@@ -22,33 +22,49 @@ nix develop
 # or: direnv allow  (once; then cd into the repo)
 ```
 
-Includes Docker **client** + Compose, **sops**, and **`bao`**. The shell
-sets `DOCKER_HOST=ssh://nico@homelab` so plain `docker` / `docker compose` talk to
-the lab (override for a local daemon if you ever need one).
-**Grok** is on the interactive PATH via home-manager (not this shell).
+Includes Docker **client** + Compose and **sops** (for NixOS host secrets).
+The shell sets `DOCKER_HOST=ssh://nico@homelab` so plain `docker` /
+`docker compose` talk to the lab. **Grok** is on the interactive PATH via
+home-manager (not this shell).
 
 ## Secrets
 
-All secrets are **sops + age** under `secrets/` (see `.sops.yaml`):
+| Kind | Where | Used by |
+|------|--------|---------|
+| **Compose / deploy** | 1Password Environment **`Homelab`** (local `.env` mount) | `scripts/deploy-containers` → stack `env_file`s |
+| **NixOS host** | sops + age under `secrets/` (e.g. `vzdump-b2.yaml`) | sops-nix at activation |
 
-| File | Used by |
-|------|---------|
-| `secrets/vzdump-b2.yaml` | NixOS vzdump→B2 (sops-nix at activation) |
-| `secrets/openbao.env` | OpenBao unseal key + root token only (`scripts/openbao-bootstrap`) |
-| `secrets/homepage.env` | Homepage: `HOMEPAGE_ALLOWED_HOSTS`, service URLs (`HOMEPAGE_VAR_*`), optional widget keys |
-| `secrets/grimmory.env` | Grimmory + MariaDB |
-| `secrets/papra.env` | Papra |
+### Homelab Environment (deploy)
 
-Homepage `stacks/homepage/config/*.yaml` uses `{{HOMEPAGE_VAR_*}}` placeholders only —
-lab hosts stay in sops, not in public git. See `stacks/homepage/secrets.env.example`.
+Create Environment **Homelab** in 1Password, add the keys listed in each stack’s
+`*.env.example` / `secrets.env.example`, and mount a local `.env` at:
 
-**OpenBao** (`stacks/openbao/`) is the planned home for app secrets (KV
-`secret/stacks/{homepage,grimmory,papra}`). Until migration, `deploy-containers` still
-decrypts the app `secrets/*.env` files above. sops remains long-term for NixOS
-and for OpenBao unseal/root.
+```text
+~/.config/grok/environments/Homelab.env
+```
 
-Edit: `sops secrets/<name>.env` (or `.yaml`). Decrypted copies under `stacks/` are
-gitignored and produced by `scripts/deploy-containers`.
+Unlock the 1Password desktop app before deploy. The mount is a FIFO (same
+pattern as Grok Environments). `deploy-containers` reads it once and writes a
+**filtered** gitignored env file next to compose (only that stack’s keys).
+
+Homepage `stacks/homepage/config/*.yaml` keeps `{{HOMEPAGE_VAR_*}}` placeholders
+only — no private hosts in public git.
+
+### Open follow-ups
+
+- **[ ] Homepage optional widget keys** in Homelab Environment (mint + paste values;
+  then uncomment the matching blocks in `stacks/homepage/config/services.yaml`):
+  - `HOMEPAGE_VAR_PVE_TOKEN` / `HOMEPAGE_VAR_PVE_SECRET` (Proxmox API token)
+  - `HOMEPAGE_VAR_TECHNITIUM_KEY` (Technitium API key)
+  - `HOMEPAGE_VAR_TAILSCALE_KEY` / `HOMEPAGE_VAR_TAILSCALE_DEVICE_ID` (Tailscale API)
+
+### Host sops
+
+```text
+sops secrets/vzdump-b2.yaml
+```
+
+Age recipients: `.sops.yaml` (workstation user + lab host).
 
 ## License
 

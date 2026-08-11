@@ -15,5 +15,5 @@ services:
     env_file:
       - secrets.env
     environment:
-      # Host allowlist — set HOMEPAGE_ALLOWED_HOSTS in secrets.env (sops)
+      # Host allowlist — set HOMEPAGE_ALLOWED_HOSTS in Homelab env (→ secrets.env)
       HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}

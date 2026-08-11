@@ -1,6 +1,6 @@
 ---
 # href / siteMonitor / widget urls use HOMEPAGE_VAR_* (see secrets.env.example).
-# Real hosts/IPs live in sops secrets/homepage.env — not in this public tree.
+# Real hosts/IPs live in 1Password Environment Homelab — not in this public tree.
 # server/container = Docker status via docker.yaml → local socket
 
 - Lab:

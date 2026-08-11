@@ -41,11 +41,11 @@ Serve VIP names (`dashboard.…`, …) often **do not resolve on the lab origin*
 | Path | Role |
 |------|------|
 | `config/config.yaml` | Endpoints, storage, UI (git) |
-| `secrets/monitoring.env` | sops; check URL env vars |
-| `.env` | decrypted on deploy (gitignored) |
+| 1P **Homelab** `GATUS_URL_*` | check URL env vars |
+| `.env` | materialized on deploy (gitignored) |
 
 ```fish
-sops secrets/monitoring.env
+# edit GATUS_URL_* in 1Password → Environments → Homelab
 cd ~/src/homelab
 ./scripts/deploy-containers monitoring
 ```
