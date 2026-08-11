@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Preflight for homelab: eval + build lab system (no activate), optional shell smoke.
+# nvd against the lab's /run/current-system when BatchMode SSH works.
+# Agent policy: green preflight gates remote switch / publish claims
+# (see Grok rules/homelab.md). Agents use nixos-rebuild, not nh.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+NVD_IF_CHANGED="${NVD_IF_CHANGED:-$HOME/src/grok/scripts/nvd-if-changed}"
+# Host alias for read-only baseline (BatchMode only — never prompts).
+HOMELAB_SSH="${HOMELAB_SSH:-nico@homelab}"
+
+log() { printf 'preflight: %s\n' "$*"; }
+fail() { printf 'preflight: FAIL: %s\n' "$*" >&2; exit 1; }
+
+nvd_if_changed() {
+  if [[ -x "$NVD_IF_CHANGED" ]]; then
+    NVD_IF_CHANGED_PREFIX=preflight "$NVD_IF_CHANGED" "$@"
+  else
+    log "nvd: skip (missing $NVD_IF_CHANGED)"
+  fi
+}
+
+log "repo=$ROOT"
+
+log "eval nixosConfigurations.homelab"
+nix eval --raw '.#nixosConfigurations.homelab.config.system.build.toplevel.drvPath' >/dev/null
+
+# Shell smoke when flake/lock or shell-related files look dirty is agent-side;
+# always cheap enough here and catches lock-only breakage of workstation tools.
+log "nix develop -c true (workstation shell smoke)"
+nix develop -c true
+
+log "build nixosConfigurations.homelab toplevel (no activate)"
+built="$(nix build --no-link --print-out-paths \
+  '.#nixosConfigurations.homelab.config.system.build.toplevel')"
+log "built=$built"
+
+# Read-only baseline: lab /run/current-system when BatchMode SSH works.
+# nvd needs the path in the *local* store (usual after a prior local build /
+# target-host switch from this seat). Never nix-copy the whole system here.
+remote=""
+if remote="$(ssh -o BatchMode=yes -o ConnectTimeout=5 \
+  "$HOMELAB_SSH" 'readlink -f /run/current-system' 2>/dev/null)" \
+  && [[ -n "$remote" ]]; then
+  if [[ -e "$remote" ]]; then
+    nvd_if_changed "homelab" "$remote" "$built"
+  else
+    log "nvd: skip (lab runs $remote but path not in local store — build/switch from this seat first)"
+  fi
+else
+  log "nvd: skip (no BatchMode SSH to $HOMELAB_SSH for /run/current-system)"
+fi
+
+log "OK (eval + shell smoke + system build; no remote switch)"
