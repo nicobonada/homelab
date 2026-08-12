@@ -50,14 +50,11 @@ pattern as Grok Environments). `deploy-containers` reads it once and writes a
 Homepage `stacks/homepage/config/*.yaml` keeps `{{HOMEPAGE_VAR_*}}` placeholders
 only — no private hosts in public git.
 
-### Open follow-ups
+### Homepage widget secrets
 
-- **[ ] Homepage optional widget keys** in Homelab Environment (then uncomment
-  matching blocks in `stacks/homepage/config/services.yaml`):
-  - [x] `HOMEPAGE_VAR_PVE_TOKEN` / `HOMEPAGE_VAR_PVE_SECRET` (Proxmox API token
-    currently `homepage@pam!homelab-dashboard`; prefer `@pve` when recreated, PVEAuditor)
-  - [x] `HOMEPAGE_VAR_TECHNITIUM_KEY` (Technitium API token, user `homepage`)
-  - [ ] `HOMEPAGE_VAR_TAILSCALE_KEY` / `HOMEPAGE_VAR_TAILSCALE_DEVICE_ID` (Tailscale API)
+All optional Homepage API widgets are wired (Proxmox, Technitium, Tailscale).
+Values live in 1Password Environment **Homelab**; Tailscale access tokens max
+**90 days** — rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
 
 ### Host sops
 

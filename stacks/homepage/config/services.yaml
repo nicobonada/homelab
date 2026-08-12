@@ -76,12 +76,12 @@
         icon: sh-tailscale
         href: https://login.tailscale.com/admin/machines
         description: VPN / devices
-        # Optional — set HOMEPAGE_VAR_TAILSCALE_KEY (device = this host)
-        # widget:
-        #   type: tailscale
-        #   deviceid: "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}"
-        #   key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
-        #   fields: ["address", "last_seen", "update_available", "hostname"]
+        # Device = lab host; API access token in Homelab env (90d max expiry)
+        widget:
+          type: tailscale
+          deviceid: "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}"
+          key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
+          fields: ["address", "last_seen", "update_available", "hostname"]
 
     - Cloudflare:
         icon: sh-cloudflare
