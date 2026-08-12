@@ -12,10 +12,10 @@ showStats: false
 layout:
   Lab:
     style: row
-    columns: 4
+    columns: 3
   Apps:
     style: row
-    columns: 4
+    columns: 3
   Cloud:
     style: row
-    columns: 4
+    columns: 3
