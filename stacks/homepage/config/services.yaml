@@ -9,14 +9,14 @@
         href: "{{HOMEPAGE_VAR_PVE_URL}}"
         description: Hypervisor
         siteMonitor: "{{HOMEPAGE_VAR_PVE_URL}}"
-        # Optional — set HOMEPAGE_VAR_PVE_TOKEN + HOMEPAGE_VAR_PVE_SECRET
-        # widget:
-        #   type: proxmox
-        #   url: "{{HOMEPAGE_VAR_PVE_URL}}"
-        #   username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
-        #   password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
-        #   node: pve
-        #   fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
+        # Token: homepage@pam!homelab-dashboard (PVEAuditor on /); secret in Homelab env
+        widget:
+          type: proxmox
+          url: "{{HOMEPAGE_VAR_PVE_URL}}"
+          username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
+          password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
+          node: pve
+          fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
 
     - Technitium:
         icon: sh-technitium

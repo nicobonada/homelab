@@ -105,7 +105,8 @@ materialize_stack_env() {
   fi
 
   umask 077
-  : >"$out_path"
+  # Last assignment wins (1P append can leave empty + filled duplicates).
+  declare -A vals=()
   for line in "${lines[@]}"; do
     case "$line" in
       '' | \#*) continue ;;
@@ -114,9 +115,13 @@ materialize_stack_env() {
     key=${line%%=*}
     val=${line#*=}
     [[ -n ${want[$key]+x} ]] || continue
-    # Preserve value as-is (including empty).
-    printf '%s=%s\n' "$key" "$val" >>"$out_path"
+    vals["$key"]=$val
     got["$key"]=1
+  done
+  : >"$out_path"
+  for k in $keys_str; do
+    [[ -n ${got[$k]+x} ]] || continue
+    printf '%s=%s\n' "$k" "${vals[$k]}" >>"$out_path"
   done
   chmod 600 "$out_path"
 

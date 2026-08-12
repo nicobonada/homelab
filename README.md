@@ -52,11 +52,12 @@ only — no private hosts in public git.
 
 ### Open follow-ups
 
-- **[ ] Homepage optional widget keys** in Homelab Environment (mint + paste values;
-  then uncomment the matching blocks in `stacks/homepage/config/services.yaml`):
-  - `HOMEPAGE_VAR_PVE_TOKEN` / `HOMEPAGE_VAR_PVE_SECRET` (Proxmox API token)
-  - `HOMEPAGE_VAR_TECHNITIUM_KEY` (Technitium API key)
-  - `HOMEPAGE_VAR_TAILSCALE_KEY` / `HOMEPAGE_VAR_TAILSCALE_DEVICE_ID` (Tailscale API)
+- **[ ] Homepage optional widget keys** in Homelab Environment (then uncomment
+  matching blocks in `stacks/homepage/config/services.yaml`):
+  - [x] `HOMEPAGE_VAR_PVE_TOKEN` / `HOMEPAGE_VAR_PVE_SECRET` (Proxmox API token
+    `homepage@pam!homelab-dashboard`, PVEAuditor)
+  - [ ] `HOMEPAGE_VAR_TECHNITIUM_KEY` (Technitium API key)
+  - [ ] `HOMEPAGE_VAR_TAILSCALE_KEY` / `HOMEPAGE_VAR_TAILSCALE_DEVICE_ID` (Tailscale API)
 
 ### Host sops
 
