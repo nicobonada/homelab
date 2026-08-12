@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ./vzdump-b2.nix
     ./syncthing.nix
+    ./music-backup.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
