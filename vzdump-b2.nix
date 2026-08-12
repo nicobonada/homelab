@@ -49,12 +49,16 @@ let
   ];
 in
 {
-  # PVE virtio-fs share of host dump tree (replaces soft NFS).
+  # PVE virtio-fs share of host /mnt/backup (T7).
+  # Trees on the share (keep isolated):
+  #   dump/  — Proxmox vzdumps (this module; rclone → B2)
+  #   music/ — Syncthing hub library (services.syncthing; see syncthing.nix)
+  # RW so the music tree is writable; rclone still only touches dump/.
   fileSystems.${mountPoint} = {
     device = virtiofsTag;
     fsType = "virtiofs";
     options = [
-      "ro"
+      "rw"
       "nofail"
     ];
   };

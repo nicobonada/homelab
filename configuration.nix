@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ./vzdump-b2.nix
+    ./syncthing.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -92,9 +93,8 @@
     openFirewall = true;
   };
 
-  # Samba music share used to live on a guest-passthrough T7 (/mnt/backup-drive).
-  # That disk is now the host vzdump volume (virtiofs RO). Re-add a share when
-  # music has a new path (e.g. staged from seyruun elsewhere).
+  # Music library replication is Syncthing (syncthing.nix → /mnt/pve-backup/music),
+  # not Samba. Keep samba off unless something else needs a share.
   services.samba = {
     enable = false;
   };

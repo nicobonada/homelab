@@ -32,8 +32,8 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  # T7 is host-side only now (PVE /mnt/backup + virtiofs pve-backup).
-  # Do not passthrough USB storage into this guest.
+  # T7 is host-side only (PVE /mnt/backup + virtiofs tag pve-backup).
+  # Guest mounts RW at /mnt/pve-backup (dump/ + music/); no USB passthrough.
 
   swapDevices = [ ];
 
