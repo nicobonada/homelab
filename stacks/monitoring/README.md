@@ -27,7 +27,8 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 
 | Target | URL style | Why |
 |--------|-----------|-----|
-| Apps on the lab | `http://host.docker.internal:<port>` | Stable “is it listening on the host?” from the Gatus container |
+| Sibling in this compose (Glances) | `http://glances:61208` | Same Docker network as Gatus — **do not** use `host.docker.internal` (hairpin to published 61208 times out from containers; browser/Tailscale still work) |
+| Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
 | Remote peers (Proxmox) | MagicDNS node name | Not co-located |
 | Human / Homepage **href** | Browser Service URLs | What you click from oakhill |
 | Homepage **widget** API | `HOMEPAGE_VAR_GATUS_HTTP` → lab host `:3001` | Server-side fetch from Homepage container; must be a published host port (not loopback inside Homepage) |

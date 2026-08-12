@@ -50,6 +50,8 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
 
+  # Co-located: GATUS_URL_GLANCES should be http://glances:61208 (compose DNS).
+  # host.docker.internal:61208 hairpins poorly and times out from this container.
   - name: glances
     group: lab
     url: "${GATUS_URL_GLANCES}"
