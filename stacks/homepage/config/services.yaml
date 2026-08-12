@@ -9,7 +9,7 @@
         href: "{{HOMEPAGE_VAR_PVE_URL}}"
         description: Hypervisor
         siteMonitor: "{{HOMEPAGE_VAR_PVE_URL}}"
-        # Token: homepage@pam!homelab-dashboard (PVEAuditor on /); secret in Homelab env
+        # Token currently homepage@pam!… — recreate under @pve when convenient
         widget:
           type: proxmox
           url: "{{HOMEPAGE_VAR_PVE_URL}}"
@@ -23,13 +23,13 @@
         href: "{{HOMEPAGE_VAR_DNS_URL}}"
         description: DNS / ad blocking
         siteMonitor: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
-        # Optional — set HOMEPAGE_VAR_TECHNITIUM_KEY
-        # widget:
-        #   type: technitium
-        #   url: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
-        #   key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
-        #   range: LastDay
-        #   fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
+        # Token: user homepage / name homelab-dashboard; secret in Homelab env
+        widget:
+          type: technitium
+          url: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
+          key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
+          range: LastDay
+          fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
     - Gatus:
         icon: sh-gatus
