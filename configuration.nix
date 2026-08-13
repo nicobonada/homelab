@@ -93,6 +93,12 @@
     enable = true;
     openFirewall = true;
   };
+  # DoH forwarders need a default route. network.target is too early after a
+  # cold start / power outage (cloudflare-dns.com:443 = network unreachable).
+  systemd.services.technitium-dns-server = {
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+  };
 
   # Music library replication is Syncthing (syncthing.nix → /mnt/pve-backup/music),
   # not Samba. Keep samba off unless something else needs a share.

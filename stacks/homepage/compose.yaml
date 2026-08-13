@@ -17,3 +17,6 @@ services:
     environment:
       # Host allowlist — set HOMEPAGE_ALLOWED_HOSTS in Homelab env (→ secrets.env)
       HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}
+    # Reach Technitium on the lab host without Tailscale hairpin after reboot.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

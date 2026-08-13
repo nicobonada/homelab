@@ -23,7 +23,8 @@
         href: "{{HOMEPAGE_VAR_DNS_URL}}"
         description: DNS / ad blocking
         siteMonitor: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
-        # Token: user homepage / name homelab-dashboard; secret in Homelab env
+        # Token: user homepage / name homepage-dashboard; secret in Homelab env
+        # HTTP URL is host.docker.internal (compose extra_hosts), not Tailscale.
         widget:
           type: technitium
           url: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
