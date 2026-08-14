@@ -67,6 +67,8 @@
         icon: homepage.png
         href: "{{HOMEPAGE_VAR_DASHBOARD_URL}}"
         description: This dashboard
+        # Probe loopback /api/healthcheck (see secrets.env.example). Public HTTPS
+        # href is for the browser; Serve VIP often fails from this container.
         siteMonitor: "{{HOMEPAGE_VAR_HOMEPAGE_HTTP}}"
         server: local
         container: homepage
