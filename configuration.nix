@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -40,7 +45,11 @@
 
   users.users.nico = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "docker"
+    ];
     # Workstation keys (seyruun + oakhill) for classic SSH when Tailscale is off.
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDfCbF/qHMrvFvPF3pwN78vu/HV9zLATmy1m0H+9wUl3 nico@seyruun"
