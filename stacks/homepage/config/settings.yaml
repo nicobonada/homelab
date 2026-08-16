@@ -9,13 +9,13 @@ target: _blank
 hideVersion: true
 # Expand docker stats when clicking status (also set per-service)
 showStats: false
+useEqualHeights: true
 layout:
-  Lab:
+  # columns are a Tailwind fallback; custom.css auto-fills .services-list
+  Services:
     style: row
-    columns: 3
-  Apps:
+    columns: 4
+    header: false
+  Quick:
     style: row
-    columns: 3
-  Cloud:
-    style: row
-    columns: 3
+    columns: 5

@@ -9,3 +9,9 @@
     - Tailscale Admin:
         - abbr: TS
           href: https://login.tailscale.com/admin/machines
+    - Cloudflare:
+        - abbr: CF
+          href: https://dash.cloudflare.com/
+    - Backblaze:
+        - abbr: B2
+          href: https://secure.backblaze.com/b2_buckets.htm

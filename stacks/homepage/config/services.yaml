@@ -2,8 +2,9 @@
 # href / siteMonitor / widget urls use HOMEPAGE_VAR_* (see secrets.env.example).
 # Real hosts/IPs live in 1Password Environment Homelab — not in this public tree.
 # server/container = Docker status via docker.yaml → local socket
+# One group: custom.css wraps .services-list (add/delete here; do not retune columns).
 
-- Lab:
+- Services:
     - Proxmox:
         icon: sh-proxmox
         href: "{{HOMEPAGE_VAR_PVE_URL}}"
@@ -44,7 +45,6 @@
           type: gatus
           url: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
 
-- Apps:
     - Grimmory:
         icon: sh-booklore
         href: "{{HOMEPAGE_VAR_BOOKS_URL}}"
@@ -83,7 +83,6 @@
         container: homepage
         showStats: true
 
-- Cloud:
     - Tailscale:
         icon: sh-tailscale
         href: https://login.tailscale.com/admin/machines
@@ -94,13 +93,3 @@
           deviceid: "{{HOMEPAGE_VAR_TAILSCALE_DEVICE_ID}}"
           key: "{{HOMEPAGE_VAR_TAILSCALE_KEY}}"
           fields: ["address", "last_seen", "update_available", "hostname"]
-
-    - Cloudflare:
-        icon: sh-cloudflare
-        href: https://dash.cloudflare.com/
-        description: DNS settings
-
-    - Backblaze:
-        icon: sh-backblaze
-        href: https://secure.backblaze.com/b2_buckets.htm
-        description: B2 / R2 storage
