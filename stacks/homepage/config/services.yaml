@@ -63,6 +63,15 @@
         container: papra
         showStats: true
 
+    - NetBox:
+        icon: sh-netbox
+        href: "{{HOMEPAGE_VAR_NETBOX_URL}}"
+        description: DCIM / IPAM
+        siteMonitor: "{{HOMEPAGE_VAR_NETBOX_HTTP}}"
+        server: local
+        container: netbox
+        showStats: true
+
     - Homepage:
         icon: homepage.png
         href: "{{HOMEPAGE_VAR_DASHBOARD_URL}}"
