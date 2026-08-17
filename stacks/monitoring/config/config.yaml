@@ -75,10 +75,10 @@ endpoints:
 
   - name: proxmox
     group: infra
-    url: https://pve.lab.bonada.ca:8006
+    url: https://pve.lab.bonada.ca
     interval: 60s
     client:
-      # PVE UI cert is self-signed. :443 is not the API; use 8006.
+      # Caddy local CA. Upstream PVE cert is skipped in the Caddyfile.
       insecure: true
     conditions:
       - "[CONNECTED] == true"

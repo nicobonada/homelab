@@ -1,13 +1,15 @@
 # Tailnet HTTPS with Caddy's local CA (not Let's Encrypt, not WAN).
 # Trust the CA once on each seat (see README) or the browser will warn.
 #
-# Upstreams are published host ports. Widget/probe URLs stay off this proxy.
+# How a name works: Technitium A → this host (CADDY_BIND). Browser hits :443
+# with Host: foo.lab.bonada.ca. Caddy matches @foo and reverse_proxies to the
+# real listener. A records that point at another machine never reach Caddy.
 
 {
 	local_certs
 }
 
-dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca {
+dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, pve.lab.bonada.ca {
 	tracing {
 		span caddy
 	}
@@ -40,6 +42,17 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 	@sync host sync.lab.bonada.ca
 	handle @sync {
 		reverse_proxy host.docker.internal:8384
+	}
+
+	# Hypervisor is not on this VM. Upstream URL stays in Homelab env (private).
+	@pve host pve.lab.bonada.ca
+	handle @pve {
+		reverse_proxy {$PVE_UPSTREAM} {
+			transport http {
+				tls
+				tls_insecure_skip_verify
+			}
+		}
 	}
 
 	handle {

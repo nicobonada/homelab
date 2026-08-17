@@ -7,13 +7,13 @@
 - Services:
     - Proxmox:
         icon: sh-proxmox
-        href: https://pve.lab.bonada.ca:8006
+        href: https://pve.lab.bonada.ca
         description: Hypervisor
-        siteMonitor: https://pve.lab.bonada.ca:8006
+        siteMonitor: https://pve.lab.bonada.ca
         # Token currently homepage@pam!… — recreate under @pve when convenient
         widget:
           type: proxmox
-          url: https://pve.lab.bonada.ca:8006
+          url: https://pve.lab.bonada.ca
           username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
           password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
           node: pve

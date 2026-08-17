@@ -18,6 +18,7 @@ go to Honeycomb. **Not** on the public internet. Tailscale Serve stays as-is.
 | `https://books.lab.bonada.ca` | Grimmory (`BOOKLORE_PORT`, default 6060) |
 | `https://dns.lab.bonada.ca` | Technitium `:5380` |
 | `https://sync.lab.bonada.ca` | Syncthing GUI `:8384` |
+| `https://pve.lab.bonada.ca` | Proxmox (`PVE_UPSTREAM`, usually `:8006`) |
 
 Glances, Technitium, and Proxmox are not behind this proxy.
 

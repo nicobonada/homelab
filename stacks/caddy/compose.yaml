@@ -18,6 +18,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io:443
       OTEL_EXPORTER_OTLP_HEADERS: x-honeycomb-team=${HONEYCOMB_API_KEY}
       BOOKLORE_PORT: ${BOOKLORE_PORT:-6060}
+      PVE_UPSTREAM: ${PVE_UPSTREAM}
     volumes:
       # Paths on the lab host; deploy-containers rsyncs Caddyfile here.
       - /home/nico/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
