@@ -21,7 +21,7 @@
 
     - Technitium:
         icon: sh-technitium
-        href: "{{HOMEPAGE_VAR_DNS_URL}}"
+        href: https://dns.lab.bonada.ca
         description: DNS / ad blocking
         siteMonitor: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
         # Token: user homepage / name homepage-dashboard; secret in Homelab env
@@ -35,7 +35,7 @@
 
     - Gatus:
         icon: sh-gatus
-        href: "{{HOMEPAGE_VAR_STATUS_URL}}"
+        href: https://status.lab.bonada.ca
         description: Monitor status
         siteMonitor: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
         server: local
@@ -47,7 +47,7 @@
 
     - Grimmory:
         icon: sh-booklore
-        href: "{{HOMEPAGE_VAR_BOOKS_URL}}"
+        href: https://books.lab.bonada.ca/dashboard
         description: Ebooks
         siteMonitor: "{{HOMEPAGE_VAR_GRIMMORY_HTTP}}"
         server: local
@@ -56,7 +56,7 @@
 
     - Papra:
         icon: sh-papra
-        href: "{{HOMEPAGE_VAR_DOCS_URL}}"
+        href: https://docs.lab.bonada.ca/
         description: Documents
         siteMonitor: "{{HOMEPAGE_VAR_PAPRA_HTTP}}"
         server: local
@@ -65,7 +65,7 @@
 
     - NetBox:
         icon: sh-netbox
-        href: "{{HOMEPAGE_VAR_NETBOX_URL}}"
+        href: https://netbox.lab.bonada.ca
         description: DCIM / IPAM
         siteMonitor: "{{HOMEPAGE_VAR_NETBOX_HTTP}}"
         server: local
@@ -74,7 +74,7 @@
 
     - Homepage:
         icon: homepage.png
-        href: "{{HOMEPAGE_VAR_DASHBOARD_URL}}"
+        href: https://dashboard.lab.bonada.ca
         description: This dashboard
         # Probe loopback /api/healthcheck (see secrets.env.example). Public HTTPS
         # href is for the browser; Serve VIP often fails from this container.

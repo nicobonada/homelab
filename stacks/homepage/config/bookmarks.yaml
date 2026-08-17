@@ -9,6 +9,9 @@
     - Tailscale Admin:
         - abbr: TS
           href: https://login.tailscale.com/admin/machines
+    - Honeycomb:
+        - abbr: HC
+          href: https://ui.honeycomb.io/nico-testing/environments/test/datasets/caddy
     - Cloudflare:
         - abbr: CF
           href: https://dash.cloudflare.com/
