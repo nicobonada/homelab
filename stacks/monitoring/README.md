@@ -32,7 +32,7 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 | Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
 | Remote peers (Proxmox) | MagicDNS node name | Not co-located |
 | Human / Homepage **href** | Browser Service URLs | What you click from oakhill |
-| Homepage **widget** API | `HOMEPAGE_VAR_GATUS_HTTP` → lab host `:3001` | Server-side fetch from Homepage container; must be a published host port (not loopback inside Homepage) |
+| Homepage **widget** API | `http://host.docker.internal:3001` | Server-side fetch from Homepage container; published host port |
 
 **Conditions:** every endpoint requires `[CONNECTED] == true` as well as status checks. Otherwise a DNS/dial failure leaves `[STATUS]` empty and `[STATUS] < 400` would **false-green**.
 
@@ -59,5 +59,5 @@ cd ~/src/homelab
 
 ## Homepage
 
-Widget type `gatus`; secret `HOMEPAGE_VAR_GATUS_HTTP` (e.g. `http://<lab-tailnet-ip>:3001`).  
-`HOMEPAGE_VAR_STATUS_URL` can stay the human Service URL if you use one.
+Widget type `gatus`; probe URL is `http://host.docker.internal:3001` in Homepage
+`services.yaml`. Human href is `https://status.lab.bonada.ca`.

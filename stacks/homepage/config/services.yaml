@@ -1,6 +1,6 @@
 ---
-# href / siteMonitor / widget urls use HOMEPAGE_VAR_* (see secrets.env.example).
-# Real hosts/IPs live in 1Password Environment Homelab — not in this public tree.
+# hrefs are *.lab.bonada.ca (Caddy). Widget/probe URLs are host.docker.internal
+# or loopback — public-safe. Only PVE URL + API tokens stay as HOMEPAGE_VAR_*.
 # server/container = Docker status via docker.yaml → local socket
 # One group: custom.css wraps .services-list (add/delete here; do not retune columns).
 
@@ -23,12 +23,11 @@
         icon: sh-technitium
         href: https://dns.lab.bonada.ca
         description: DNS / ad blocking
-        siteMonitor: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
+        siteMonitor: http://host.docker.internal:5380
         # Token: user homepage / name homepage-dashboard; secret in Homelab env
-        # HTTP URL is host.docker.internal (compose extra_hosts), not Tailscale.
         widget:
           type: technitium
-          url: "{{HOMEPAGE_VAR_TECHNITIUM_HTTP}}"
+          url: http://host.docker.internal:5380
           key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
           range: LastDay
           fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
@@ -37,12 +36,11 @@
         icon: sh-syncthing
         href: https://sync.lab.bonada.ca
         description: File sync hub
-        siteMonitor: "{{HOMEPAGE_VAR_SYNCTHING_HTTP}}"
-        # API key: Actions → Settings → General. Widget URL is host.docker.internal
-        # (compose extra_hosts); href is Caddy. GUI has no password (tailnet Caddy only).
+        siteMonitor: http://host.docker.internal:8384
+        # API key: Actions → Settings → General. href is Caddy.
         widget:
           type: syncthing
-          url: "{{HOMEPAGE_VAR_SYNCTHING_HTTP}}"
+          url: http://host.docker.internal:8384
           key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
           fields: ["connected", "synced", "errors", "storage"]
 
@@ -50,19 +48,19 @@
         icon: sh-gatus
         href: https://status.lab.bonada.ca
         description: Monitor status
-        siteMonitor: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
+        siteMonitor: http://host.docker.internal:3001
         server: local
         container: gatus
         showStats: true
         widget:
           type: gatus
-          url: "{{HOMEPAGE_VAR_GATUS_HTTP}}"
+          url: http://host.docker.internal:3001
 
     - Grimmory:
         icon: sh-booklore
         href: https://books.lab.bonada.ca/dashboard
         description: Ebooks
-        siteMonitor: "{{HOMEPAGE_VAR_GRIMMORY_HTTP}}"
+        siteMonitor: http://host.docker.internal:6060
         server: local
         container: grimmory
         showStats: true
@@ -71,7 +69,7 @@
         icon: sh-papra
         href: https://docs.lab.bonada.ca/
         description: Documents
-        siteMonitor: "{{HOMEPAGE_VAR_PAPRA_HTTP}}"
+        siteMonitor: http://host.docker.internal:1221
         server: local
         container: papra
         showStats: true
@@ -80,7 +78,7 @@
         icon: sh-netbox
         href: https://netbox.lab.bonada.ca
         description: DCIM / IPAM
-        siteMonitor: "{{HOMEPAGE_VAR_NETBOX_HTTP}}"
+        siteMonitor: http://host.docker.internal:8000
         server: local
         container: netbox
         showStats: true
@@ -89,9 +87,8 @@
         icon: homepage.png
         href: https://dashboard.lab.bonada.ca
         description: This dashboard
-        # Probe loopback /api/healthcheck (see secrets.env.example). Public HTTPS
-        # href is for the browser; Serve VIP often fails from this container.
-        siteMonitor: "{{HOMEPAGE_VAR_HOMEPAGE_HTTP}}"
+        # Same-container health endpoint. href is Caddy for the browser.
+        siteMonitor: http://127.0.0.1:3000/api/healthcheck
         server: local
         container: homepage
         showStats: true

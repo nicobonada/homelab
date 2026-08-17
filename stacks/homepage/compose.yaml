@@ -15,8 +15,8 @@ services:
     env_file:
       - secrets.env
     environment:
-      # Host allowlist — set HOMEPAGE_ALLOWED_HOSTS in Homelab env (→ secrets.env)
-      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}
+      # Caddy *.lab.bonada.ca is the door. Not materialized from 1P.
+      HOMEPAGE_ALLOWED_HOSTS: localhost:3000,127.0.0.1:3000,homelab:3000,dashboard.lab.bonada.ca,*.lab.bonada.ca
     # Reach Technitium on the lab host without Tailscale hairpin after reboot.
     extra_hosts:
       - "host.docker.internal:host-gateway"

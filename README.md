@@ -52,15 +52,15 @@ Unlock the 1Password desktop app before deploy. The mount is a FIFO (same
 pattern as Grok Environments). `deploy-containers` reads it once and writes a
 **filtered** gitignored env file next to compose (only that stack’s keys).
 
-Homepage `stacks/homepage/config/*.yaml` keeps `{{HOMEPAGE_VAR_*}}` placeholders
-only — no private hosts in public git.
+Homepage hrefs are `*.lab.bonada.ca`. Widget/probe URLs that are public-safe
+(`host.docker.internal`, loopback) live in `config/*.yaml`. Homelab env keeps
+API tokens, the Proxmox Serve URL, and the Glances probe (hairpin exception).
 
 ### Homepage widget secrets
 
-All optional Homepage API widgets are wired (Proxmox, Technitium, Tailscale,
-Syncthing). Values live in 1Password Environment **Homelab**; Tailscale access
-tokens max **90 days** — rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy
-homepage. Syncthing uses the hub GUI API key (`HOMEPAGE_VAR_SYNCTHING_KEY`).
+Wired widgets: Proxmox, Technitium, Tailscale, Syncthing. Tokens live in
+1Password Environment **Homelab**; Tailscale access tokens max **90 days** —
+rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
 
 ### Host sops
 
