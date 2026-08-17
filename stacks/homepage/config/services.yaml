@@ -74,15 +74,6 @@
         container: papra
         showStats: true
 
-    - NetBox:
-        icon: sh-netbox
-        href: https://netbox.lab.bonada.ca
-        description: DCIM / IPAM
-        siteMonitor: http://host.docker.internal:8000
-        server: local
-        container: netbox
-        showStats: true
-
     - Homepage:
         icon: homepage.png
         href: https://dashboard.lab.bonada.ca

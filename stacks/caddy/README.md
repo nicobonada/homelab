@@ -14,7 +14,6 @@ go to Honeycomb. **Not** on the public internet. Tailscale Serve stays as-is.
 |------|----------|
 | `https://dashboard.lab.bonada.ca` | Homepage `:3000` |
 | `https://status.lab.bonada.ca` | Gatus `:3001` |
-| `https://netbox.lab.bonada.ca` | Netbox `:8000` |
 | `https://docs.lab.bonada.ca` | Papra `:1221` |
 | `https://books.lab.bonada.ca` | Grimmory (`BOOKLORE_PORT`, default 6060) |
 | `https://dns.lab.bonada.ca` | Technitium `:5380` |

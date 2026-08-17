@@ -9,7 +9,6 @@ root; this directory is **apps only** and is deployed separately.
 |-----------|--------|
 | `grimmory/` | Library app + MariaDB |
 | `papra/` | Documents |
-| `netbox/` | DCIM / IPAM (official `netboxcommunity/netbox`) |
 | `homepage/` | Dashboard (+ `config/`) |
 | `monitoring/` | Glances + Gatus |
 | `caddy/` | HTTP front door + Honeycomb traces (tailnet only) |
@@ -33,7 +32,6 @@ cd ~/src/homelab
 ./scripts/deploy-containers monitoring
 ./scripts/deploy-containers homepage
 ./scripts/deploy-containers grimmory
-./scripts/deploy-containers netbox
 # ./scripts/deploy-containers --all
 ```
 
