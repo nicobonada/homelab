@@ -28,8 +28,13 @@ ui:
 endpoints:
   - name: homepage
     group: lab
-    url: "${GATUS_URL_HOMEPAGE}"
+    # Same host the browser uses. host.docker.internal:3000 sends Host that
+    # Homepage rejects (400, ALLOWED_HOSTS). Hairpin to Caddy on CADDY_BIND works
+    # from this container. Local CA: Gatus tls: is mTLS only, no extra CA file.
+    url: https://dashboard.lab.bonada.ca/api/healthcheck
     interval: 60s
+    client:
+      insecure: true
     conditions:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
