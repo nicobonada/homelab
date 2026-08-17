@@ -1,0 +1,48 @@
+# Tailnet HTTPS with Caddy's local CA (not Let's Encrypt, not WAN).
+# Trust the CA once on each seat (see README) or the browser will warn.
+#
+# Upstreams are published host ports. Widget/probe URLs stay off this proxy.
+
+{
+	local_certs
+}
+
+dashboard.lab.bonada.ca, status.lab.bonada.ca, netbox.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca {
+	tracing {
+		span caddy
+	}
+
+	@dashboard host dashboard.lab.bonada.ca
+	handle @dashboard {
+		reverse_proxy host.docker.internal:3000
+	}
+
+	@status host status.lab.bonada.ca
+	handle @status {
+		reverse_proxy host.docker.internal:3001
+	}
+
+	@netbox host netbox.lab.bonada.ca
+	handle @netbox {
+		reverse_proxy host.docker.internal:8000
+	}
+
+	@docs host docs.lab.bonada.ca
+	handle @docs {
+		reverse_proxy host.docker.internal:1221
+	}
+
+	@books host books.lab.bonada.ca
+	handle @books {
+		reverse_proxy host.docker.internal:{$BOOKLORE_PORT:6060}
+	}
+
+	@dns host dns.lab.bonada.ca
+	handle @dns {
+		reverse_proxy host.docker.internal:5380
+	}
+
+	handle {
+		respond "caddy: unknown host" 404
+	}
+}

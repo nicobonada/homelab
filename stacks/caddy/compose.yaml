@@ -1,0 +1,27 @@
+# Reverse proxy for Compose UIs + OTel traces to Honeycomb.
+# Bind is tailnet-only (CADDY_BIND). Do not publish 80/443 on the WAN.
+# Secrets: 1Password Homelab → .env (gitignored).
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "${CADDY_BIND}:80:80"
+      - "${CADDY_BIND}:443:443"
+      - "${CADDY_BIND}:443:443/udp"
+    env_file:
+      - .env
+    environment:
+      OTEL_SERVICE_NAME: caddy
+      # Official image traces over gRPC (not HTTP/protobuf).
+      OTEL_EXPORTER_OTLP_ENDPOINT: https://api.honeycomb.io:443
+      OTEL_EXPORTER_OTLP_HEADERS: x-honeycomb-team=${HONEYCOMB_API_KEY}
+      BOOKLORE_PORT: ${BOOKLORE_PORT:-6060}
+    volumes:
+      # Paths on the lab host; deploy-containers rsyncs Caddyfile here.
+      - /home/nico/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Persist local CA so the cert does not rotate on every recreate.
+      - /home/nico/caddy/data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

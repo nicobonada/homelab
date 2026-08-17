@@ -30,6 +30,7 @@ declare -A STACK_ENV_OUT=(
   [papra]=".env"
   [monitoring]=".env"
   [netbox]=".env"
+  [caddy]=".env"
 )
 
 # Keys to materialize per stack (from the shared Homelab Environment).
@@ -40,6 +41,7 @@ declare -A STACK_ENV_KEYS=(
   [papra]="AUTH_SECRET APP_BASE_URL CLIENT_BASE_URL"
   [monitoring]="GATUS_URL_HOMEPAGE GATUS_URL_GRIMMORY GATUS_URL_PAPRA GATUS_URL_NETBOX GATUS_URL_GLANCES GATUS_URL_TECHNITIUM GATUS_URL_PROXMOX"
   [netbox]="NETBOX_SECRET_KEY NETBOX_API_TOKEN_PEPPER NETBOX_DB_PASSWORD NETBOX_REDIS_PASSWORD NETBOX_REDIS_CACHE_PASSWORD NETBOX_SUPERUSER_NAME NETBOX_SUPERUSER_EMAIL NETBOX_SUPERUSER_PASSWORD"
+  [caddy]="HONEYCOMB_API_KEY CADDY_BIND BOOKLORE_PORT"
 )
 
 # Stack dirs are those with compose.yaml (ignore README.md and other files).
@@ -165,6 +167,10 @@ sync_remote_paths() {
       rsync -az --delete \
         "$STACKS/monitoring/config/" \
         "$host:/home/nico/monitoring/config/"
+      ;;
+    caddy)
+      ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/caddy/data"
+      rsync -az "$STACKS/caddy/Caddyfile" "$host:/home/nico/caddy/Caddyfile"
       ;;
   esac
 }
