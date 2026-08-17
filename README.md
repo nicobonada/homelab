@@ -57,9 +57,10 @@ only — no private hosts in public git.
 
 ### Homepage widget secrets
 
-All optional Homepage API widgets are wired (Proxmox, Technitium, Tailscale).
-Values live in 1Password Environment **Homelab**; Tailscale access tokens max
-**90 days** — rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
+All optional Homepage API widgets are wired (Proxmox, Technitium, Tailscale,
+Syncthing). Values live in 1Password Environment **Homelab**; Tailscale access
+tokens max **90 days** — rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy
+homepage. Syncthing uses the hub GUI API key (`HOMEPAGE_VAR_SYNCTHING_KEY`).
 
 ### Host sops
 

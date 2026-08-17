@@ -33,6 +33,19 @@
           range: LastDay
           fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
+    - Syncthing:
+        icon: sh-syncthing
+        href: https://sync.lab.bonada.ca
+        description: File sync hub
+        siteMonitor: "{{HOMEPAGE_VAR_SYNCTHING_HTTP}}"
+        # API key: Actions → Settings → General. Widget URL is host.docker.internal
+        # (compose extra_hosts); href is Caddy. GUI has no password (tailnet Caddy only).
+        widget:
+          type: syncthing
+          url: "{{HOMEPAGE_VAR_SYNCTHING_HTTP}}"
+          key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
+          fields: ["connected", "synced", "errors", "storage"]
+
     - Gatus:
         icon: sh-gatus
         href: https://status.lab.bonada.ca

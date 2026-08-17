@@ -37,7 +37,9 @@ in
   services.syncthing = {
     enable = true;
     openDefaultPorts = true;
-    guiAddress = "127.0.0.1:8384";
+    # All interfaces so Caddy/Homepage can scrape via host.docker.internal.
+    # Tailnet :8384 stays closed; humans use https://sync.lab.bonada.ca.
+    guiAddress = "0.0.0.0:8384";
     overrideDevices = true;
     overrideFolders = true;
     settings = {
@@ -54,11 +56,21 @@ in
           path = beetsPath;
         };
       };
+      gui = {
+        # Reverse-proxy Host is sync.lab.bonada.ca / host.docker.internal, not the listen address.
+        insecureSkipHostcheck = true;
+      };
       options = {
         urAccepted = -1;
       };
     };
   };
+
+  # Compose apps use a user bridge; docker0 stays DOWN. host.docker.internal is
+  # still 172.17.0.1, so an interface-only docker0 rule never matches. Open 8384
+  # like Technitium. Human URL stays https://sync.lab.bonada.ca; set a GUI
+  # password (Syncthing Actions → Settings) now that the console is reachable.
+  networking.firewall.allowedTCPPorts = [ 8384 ];
 
   # Create folder roots after virtiofs is up (tmpfiles races nofail mounts).
   systemd.services.syncthing-share-dirs = {

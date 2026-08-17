@@ -7,7 +7,7 @@
 	local_certs
 }
 
-dashboard.lab.bonada.ca, status.lab.bonada.ca, netbox.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca {
+dashboard.lab.bonada.ca, status.lab.bonada.ca, netbox.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca {
 	tracing {
 		span caddy
 	}
@@ -40,6 +40,11 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, netbox.lab.bonada.ca, docs.lab.bo
 	@dns host dns.lab.bonada.ca
 	handle @dns {
 		reverse_proxy host.docker.internal:5380
+	}
+
+	@sync host sync.lab.bonada.ca
+	handle @sync {
+		reverse_proxy host.docker.internal:8384
 	}
 
 	handle {
