@@ -30,7 +30,7 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 | Homepage | `https://dashboard.lab.bonada.ca/api/healthcheck` | Same Host as the browser. Direct `host.docker.internal:3000` is **400** (Homepage `ALLOWED_HOSTS`). Hairpin to Caddy on `CADDY_BIND` works from this container; `client.insecure` for the Caddy local CA (Gatus has no extra-CA hook). |
 | Sibling in this compose (Glances) | `http://glances:61208` | Same Docker network as Gatus — **do not** use `host.docker.internal` (hairpin to published 61208 times out from containers; browser/Tailscale still work) |
 | Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
-| Remote peers (Proxmox) | MagicDNS node name | Not co-located |
+| Remote peers (Proxmox) | `https://pve.lab.bonada.ca:8006` | Hypervisor A record; API is 8006 (not :443). `client.insecure` for the PVE UI cert. |
 | Human / Homepage **href** | Browser Service URLs | What you click from oakhill |
 | Homepage **widget** API | `http://host.docker.internal:3001` | Server-side fetch from Homepage container; published host port |
 

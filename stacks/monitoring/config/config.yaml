@@ -75,10 +75,10 @@ endpoints:
 
   - name: proxmox
     group: infra
-    url: "${GATUS_URL_PROXMOX}"
+    url: https://pve.lab.bonada.ca:8006
     interval: 60s
     client:
-      # Lab PVE UI often uses a self-signed cert over Tailscale.
+      # PVE UI cert is self-signed. :443 is not the API; use 8006.
       insecure: true
     conditions:
       - "[CONNECTED] == true"

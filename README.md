@@ -53,8 +53,8 @@ pattern as Grok Environments). `deploy-containers` reads it once and writes a
 **filtered** gitignored env file next to compose (only that stack’s keys).
 
 Homepage hrefs are `*.lab.bonada.ca`. Widget/probe URLs that are public-safe
-(`host.docker.internal`, loopback) live in `config/*.yaml`. Homelab env keeps
-API tokens, the Proxmox Serve URL, and the Glances probe (hairpin exception).
+(`host.docker.internal`, loopback, compose DNS) live in `config/*.yaml`.
+Homelab env keeps API tokens only.
 
 ### Homepage widget secrets
 

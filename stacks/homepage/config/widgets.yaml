@@ -21,7 +21,7 @@
 
 # Host metrics via Glances (resources widget only sees the Homepage container)
 - glances:
-    url: "{{HOMEPAGE_VAR_GLANCES_HTTP}}"
+    url: http://glances:61208
     version: 4
     label: Host
     cpu: true

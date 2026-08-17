@@ -20,3 +20,11 @@ services:
     # Reach Technitium on the lab host without Tailscale hairpin after reboot.
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - monitoring
+
+networks:
+  monitoring:
+    external: true
+    name: monitoring_default

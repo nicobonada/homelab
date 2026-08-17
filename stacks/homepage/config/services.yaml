@@ -1,19 +1,19 @@
 ---
-# hrefs are *.lab.bonada.ca (Caddy). Widget/probe URLs are host.docker.internal
-# or loopback — public-safe. Only PVE URL + API tokens stay as HOMEPAGE_VAR_*.
+# hrefs are *.lab.bonada.ca. Widget/probe URLs are host.docker.internal, loopback,
+# or compose DNS (glances). Only API tokens stay as HOMEPAGE_VAR_*.
 # server/container = Docker status via docker.yaml → local socket
 # One group: custom.css wraps .services-list (add/delete here; do not retune columns).
 
 - Services:
     - Proxmox:
         icon: sh-proxmox
-        href: "{{HOMEPAGE_VAR_PVE_URL}}"
+        href: https://pve.lab.bonada.ca:8006
         description: Hypervisor
-        siteMonitor: "{{HOMEPAGE_VAR_PVE_URL}}"
+        siteMonitor: https://pve.lab.bonada.ca:8006
         # Token currently homepage@pam!… — recreate under @pve when convenient
         widget:
           type: proxmox
-          url: "{{HOMEPAGE_VAR_PVE_URL}}"
+          url: https://pve.lab.bonada.ca:8006
           username: "{{HOMEPAGE_VAR_PVE_TOKEN}}"
           password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
           node: pve
