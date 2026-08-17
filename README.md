@@ -23,8 +23,8 @@ nix develop
 ```
 
 Includes Docker **client** + Compose, **sops** (for NixOS host secrets),
-and Docker TUIs (**lazydocker**, **ctop**). The shell sets
-`DOCKER_HOST=ssh://nico@homelab` so `docker`, `lazydocker`, and `ctop`
+and the Docker TUI **lazydocker**. The shell sets
+`DOCKER_HOST=ssh://nico@homelab` so `docker` and `lazydocker`
 talk to the lab. **Grok** is on the interactive PATH via home-manager
 (not this shell).
 
