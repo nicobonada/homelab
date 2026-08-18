@@ -3,11 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-    # Same DetSys pin as nix-config workstations (already on this seat's store).
-    # Do not float `*` — FlakeHub can resolve to a newer minor (e.g. 3.22) and
-    # every `nix develop` / direnv load fetches it even though the shell only
-    # uses nixpkgs packages. Bump in lockstep with nix-config when ready.
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/=3.21.9";
+    # Determinate Nix (same FlakeHub float as nix-config).
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
