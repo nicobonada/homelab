@@ -45,6 +45,21 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 	}
 
 	# Hypervisor is not on this VM. Upstream URL stays in Homelab env (private).
+	# PVE's UI returns 501 for HEAD; Homepage siteMonitor uses HEAD through Caddy.
+	@pve_head {
+		host pve.lab.bonada.ca
+		method HEAD
+	}
+	handle @pve_head {
+		reverse_proxy {$PVE_UPSTREAM} {
+			method GET
+			transport http {
+				tls
+				tls_insecure_skip_verify
+			}
+		}
+	}
+
 	@pve host pve.lab.bonada.ca
 	handle @pve {
 		reverse_proxy {$PVE_UPSTREAM} {

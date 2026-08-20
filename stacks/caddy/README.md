@@ -20,10 +20,12 @@ go to Honeycomb. **Not** on the public internet. Tailscale Serve stays as-is.
 | `https://sync.lab.bonada.ca` | Syncthing GUI `:8384` |
 | `https://pve.lab.bonada.ca` | Proxmox (`PVE_UPSTREAM`, usually `:8006`) |
 
-Glances, Technitium, and Proxmox are not behind this proxy.
+Glances and Technitium are not behind this proxy. Proxmox is: the
+hypervisor is a different machine, so Homepage `siteMonitor` and Gatus
+hairpin here. PVE returns 501 for HEAD; Caddy sends GET upstream for those.
 
-Homepage widgets and Gatus probes keep using `host.docker.internal` — do not
-route scrapes through Caddy.
+Other Homepage widgets and Gatus probes keep using `host.docker.internal` —
+do not route those scrapes through Caddy.
 
 ## Trust the local CA
 

@@ -57,7 +57,7 @@ cd ~/src/homelab
 
 `deploy-containers` rsyncs `config/` to `/home/nico/monitoring/config` on the lab (remote bind mount).
 
-After data appears in Honeycomb (environment **test**, dataset **metrics**): Boards → Templates → **Linux Host**. The template wants compacted names (`system.filesystem.usage.used`); the collector flattens `state`/`direction` for those panels.
+After data appears in Honeycomb (environment **test**, dataset **metrics**): board **Homelab host**. The stock Linux Host template queries 500 here; the collector still flattens `state`/`direction` so those metric names exist.
 
 otelcol is `privileged` + `pid: host` so the `process` scraper can read host `/proc` (template panels). Loop/tmpfs/overlay/`veth*` series are dropped in `otelcol.yaml`.
 

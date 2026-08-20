@@ -60,7 +60,7 @@ Exporter: OTLP/HTTP to `api.honeycomb.io`. Environments ignore `x-honeycomb-data
 
 Apply: `./scripts/deploy-containers monitoring` (rsyncs `config/` including `otelcol.yaml`). Config changes need a recreate (`--force-recreate otelcol`); the process does not watch the file.
 
-After a few minutes of data: Honeycomb → env **test** → Boards → Templates → **Linux Host** → dataset **`metrics`**.
+After a few minutes of data: Honeycomb → env **test** → board **Homelab host** (dataset **`metrics`**). The stock Linux Host template queries 500 on this team; do not use them.
 
 ## Free-plan usage
 
