@@ -1,0 +1,91 @@
+# OpenTelemetry Collector: Linux host metrics → Honeycomb.
+# Scrapers match the Linux Host board template. 60s interval.
+# ${env:HONEYCOMB_API_KEY} comes from the container environment.
+receivers:
+  host_metrics:
+    collection_interval: 60s
+    root_path: /hostfs
+    scrapers:
+      cpu: {}
+      disk: {}
+      load: {}
+      filesystem: {}
+      memory: {}
+      network: {}
+      paging: {}
+      processes: {}
+      process:
+        # Skip /proc permission noise; skip short-lived ps/bash from scrapes.
+        mute_process_all_errors: true
+        scrape_process_delay: 10s
+
+processors:
+  # Snap timestamps to 1s so Honeycomb can pack same-scrape points together.
+  transform/truncate_time:
+    error_mode: ignore
+    metric_statements:
+      - context: datapoint
+        statements:
+          - set(datapoint.time, TruncateTime(datapoint.time, Duration("1s")))
+
+  # Drop loop/tmpfs/overlay/veth noise (NixOS + Docker otherwise explode cardinality).
+  filter/drop_virtual:
+    error_mode: ignore
+    metrics:
+      datapoint:
+        - 'attributes["device"] != nil and IsMatch(attributes["device"], "^(loop|ram|zram)")'
+        - 'attributes["device"] != nil and IsMatch(attributes["device"], "^(veth|br-|docker)")'
+        - 'attributes["device"] != nil and attributes["device"] == "lo"'
+        - 'attributes["type"] != nil and IsMatch(attributes["type"], "^(tmpfs|overlay|squashfs|nsfs|cgroup2?|devtmpfs|rpc_pipefs|fusectl|debugfs|tracefs|securityfs|pstore|bpf|hugetlbfs|mqueue|configfs)$")'
+
+  resource_detection:
+    detectors: [env, system]
+    timeout: 5s
+    override: false
+
+  resource:
+    attributes:
+      - key: service.name
+        value: linux-host
+        action: upsert
+      # UTS namespace is the container; pin the VM name for the board.
+      - key: host.name
+        value: homelab
+        action: upsert
+
+  batch:
+    timeout: 10s
+    send_batch_size: 1024
+
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 200
+    spike_limit_mib: 50
+
+exporters:
+  otlp_http/honeycomb:
+    endpoint: https://api.honeycomb.io:443
+    headers:
+      x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
+      x-honeycomb-dataset: linux-host
+    compression: gzip
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics:
+      receivers: [host_metrics]
+      processors:
+        [
+          memory_limiter,
+          resource_detection,
+          resource,
+          filter/drop_virtual,
+          transform/truncate_time,
+          batch,
+        ]
+      exporters: [otlp_http/honeycomb]

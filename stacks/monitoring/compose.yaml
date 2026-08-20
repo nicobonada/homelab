@@ -1,5 +1,5 @@
-# Host metrics (Glances) + health checks / status UI (Gatus) for Homepage.
-# Gatus config is rsync'd to the lab host by scripts/deploy-containers
+# Host metrics (Glances) + health checks / status UI (Gatus) + Honeycomb hostmetrics.
+# Gatus/otelcol config is rsync'd to the lab host by scripts/deploy-containers
 # (bind mounts resolve on the remote daemon when DOCKER_HOST=ssh://…).
 services:
   glances:
@@ -37,6 +37,24 @@ services:
     # Reach other lab listeners on the host (Homepage, apps, Glances, …).
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  # Linux Host board: hostmetrics → Honeycomb dataset linux-host (60s).
+  # pid:host + /hostfs so scrapers see the VM, not this container.
+  otelcol:
+    image: otel/opentelemetry-collector-contrib:0.159.0
+    container_name: otelcol
+    restart: unless-stopped
+    pid: host
+    user: "0:0"
+    privileged: true
+    env_file:
+      - .env
+    volumes:
+      - /home/nico/monitoring/config/otelcol.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - /:/hostfs:ro
+      - /etc/os-release:/etc/os-release:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    # No published ports. Gatus probes health_check on the compose network.
 
 volumes:
   gatus-data:

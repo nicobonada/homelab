@@ -10,7 +10,7 @@ root; this directory is **apps only** and is deployed separately.
 | `grimmory/` | Library app + MariaDB |
 | `papra/` | Documents |
 | `homepage/` | Dashboard (+ `config/`) |
-| `monitoring/` | Glances + Gatus |
+| `monitoring/` | Glances + Gatus + Honeycomb hostmetrics |
 | `caddy/` | HTTP front door + Honeycomb traces (tailnet only) |
 
 Each stack has `compose.yaml`. Deploy secrets live in the 1Password Environment

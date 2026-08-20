@@ -1,6 +1,7 @@
-# Homelab monitoring (Glances + Gatus)
+# Homelab monitoring (Glances + Gatus + Honeycomb hostmetrics)
 
-Used by Homepage widgets (`../homepage/config`).
+Used by Homepage widgets (`../homepage/config`). Host metrics also go to
+Honeycomb for the Linux Host board (history / query; not a Glances replacement).
 
 ## Services
 
@@ -8,6 +9,7 @@ Used by Homepage widgets (`../homepage/config`).
 |---------|-----------|---------|
 | Glances | 61208 | Host CPU/RAM/disk for Homepage header |
 | Gatus | **3001** | HTTP(S) checks + status UI (`3001:8080`) |
+| otelcol | (none) | `hostmetrics` every 60s → Honeycomb dataset `linux-host` |
 
 ### Why host port 3001
 
@@ -29,6 +31,7 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 |--------|-----------|-----|
 | Homepage | `https://dashboard.lab.bonada.ca/api/healthcheck` | Same Host as the browser. Direct `host.docker.internal:3000` is **400** (Homepage `ALLOWED_HOSTS`). Hairpin to Caddy on `CADDY_BIND` works from this container; `client.insecure` for the Caddy local CA (Gatus has no extra-CA hook). |
 | Sibling in this compose (Glances) | `http://glances:61208` | Same Docker network as Gatus — **do not** use `host.docker.internal` (hairpin to published 61208 times out from containers; browser/Tailscale still work) |
+| Sibling in this compose (otelcol) | `http://otelcol:13133` | Collector `health_check` extension. No host publish. |
 | Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
 | Remote peers (Proxmox) | `https://pve.lab.bonada.ca` | A record → Caddy; Caddy proxies to `PVE_UPSTREAM` (`:8006`). `client.insecure` for the Caddy local CA. |
 | Human / Homepage **href** | Browser Service URLs | What you click from oakhill |
@@ -40,17 +43,23 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 
 | Path | Role |
 |------|------|
-| `config/config.yaml` | Endpoints, storage, UI (git) |
+| `config/config.yaml` | Gatus endpoints, storage, UI (git) |
+| `config/otelcol.yaml` | Collector: Linux Host scrapers, 60s, filters |
 | 1P **Homelab** `GATUS_URL_*` | check URL env vars |
+| 1P **Homelab** `HONEYCOMB_API_KEY` | same ingest key as Caddy |
 | `.env` | materialized on deploy (gitignored) |
 
 ```fish
-# edit GATUS_URL_* in 1Password → Environments → Homelab
+# edit GATUS_URL_* / HONEYCOMB_API_KEY in 1Password → Environments → Homelab
 cd ~/src/homelab
 ./scripts/deploy-containers monitoring
 ```
 
 `deploy-containers` rsyncs `config/` to `/home/nico/monitoring/config` on the lab (remote bind mount).
+
+After data appears in Honeycomb (environment **test**, dataset **linux-host**): Boards → Templates → **Linux Host**.
+
+otelcol is `privileged` + `pid: host` so the `process` scraper can read host `/proc` (template panels). Loop/tmpfs/overlay/`veth*` series are dropped in `otelcol.yaml`.
 
 ## Open follow-ups
 

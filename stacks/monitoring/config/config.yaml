@@ -65,6 +65,15 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] == 200"
 
+  # Same compose network as Gatus (container_name otelcol). Health extension.
+  - name: otelcol
+    group: lab
+    url: http://otelcol:13133
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] == 200"
+
   - name: technitium
     group: infra
     url: "${GATUS_URL_TECHNITIUM}"
