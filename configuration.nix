@@ -102,11 +102,52 @@
     enable = true;
     openFirewall = true;
   };
+  # Named user so hostmetrics process.owner can resolve DnsServerApp.
+  # The module defaults to DynamicUser, which only appears in systemd-userdb
+  # (not /etc/passwd). The collector is a static Go binary that reads passwd.
+  users.groups.technitium-dns-server = { };
+  users.users.technitium-dns-server = {
+    isSystemUser = true;
+    group = "technitium-dns-server";
+    description = "Technitium DNS Server";
+  };
   # DoH forwarders need a default route. network.target is too early after a
   # cold start / power outage (cloudflare-dns.com:443 = network unreachable).
   systemd.services.technitium-dns-server = {
     wants = [ "network-online.target" ];
     after = [ "network-online.target" ];
+    serviceConfig = {
+      DynamicUser = lib.mkForce false;
+      User = "technitium-dns-server";
+      Group = "technitium-dns-server";
+      # DynamicUser kept state under /var/lib/private/…; named User uses
+      # /var/lib/technitium-dns-server. '+' runs this as root before drop.
+      ExecStartPre = [
+        "+${pkgs.writeShellScript "technitium-migrate-state" ''
+          set -eu
+          migrate() {
+            src=$1
+            dst=$2
+            if [ ! -d "$src" ]; then
+              return 0
+            fi
+            mkdir -p "$dst"
+            if [ "$(${pkgs.findutils}/bin/find "$dst" -mindepth 1 -maxdepth 1 | ${pkgs.coreutils}/bin/wc -l)" -eq 0 ]; then
+              ${pkgs.findutils}/bin/find "$src" -mindepth 1 -maxdepth 1 -exec ${pkgs.coreutils}/bin/mv -t "$dst" {} +
+              ${pkgs.coreutils}/bin/rmdir "$src" || true
+            fi
+          }
+          migrate /var/lib/private/technitium-dns-server /var/lib/technitium-dns-server
+          migrate /var/log/private/technitium /var/log/technitium
+          if [ -d /var/lib/technitium-dns-server ]; then
+            ${pkgs.coreutils}/bin/chown -R technitium-dns-server:technitium-dns-server /var/lib/technitium-dns-server
+          fi
+          if [ -d /var/log/technitium ]; then
+            ${pkgs.coreutils}/bin/chown -R technitium-dns-server:technitium-dns-server /var/log/technitium
+          fi
+        ''}"
+      ];
+    };
   };
 
   # Music library replication is Syncthing (syncthing.nix → /mnt/pve-backup/music),

@@ -107,8 +107,8 @@ processors:
         value: homelab
         action: upsert
 
-  # Linux Host process panels require process.owner. Lookup can fail for
-  # container-only UIDs even with host /etc/passwd mounted.
+  # Linux Host process panels require process.owner. The collector only
+  # reads /etc/passwd (not nss-systemd). DynamicUser / missing names → unknown.
   transform/process_owner:
     error_mode: ignore
     metric_statements:
