@@ -54,6 +54,9 @@ services:
       - /:/hostfs:ro
       - /etc/os-release:/etc/os-release:ro
       - /etc/machine-id:/etc/machine-id:ro
+      # Host user names for process.owner (Linux Host process panels).
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
     # No published ports. Gatus probes health_check on the compose network.
 
 volumes:

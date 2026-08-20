@@ -107,6 +107,15 @@ processors:
         value: homelab
         action: upsert
 
+  # Linux Host process panels require process.owner. Lookup can fail for
+  # container-only UIDs even with host /etc/passwd mounted.
+  transform/process_owner:
+    error_mode: ignore
+    metric_statements:
+      - context: resource
+        statements:
+          - set(resource.attributes["process.owner"], "unknown") where resource.attributes["process.pid"] != nil and resource.attributes["process.owner"] == nil
+
   batch:
     timeout: 10s
     send_batch_size: 1024
@@ -138,6 +147,7 @@ service:
           memory_limiter,
           resource_detection,
           resource,
+          transform/process_owner,
           filter/drop_virtual,
           metrics_transform/flatten,
           filter/drop_unflattened,

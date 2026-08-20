@@ -54,6 +54,7 @@ Processors:
 - Truncate metric timestamps to 1s so points from one scrape pack together.
 - Set `service.name=linux-host` and `host.name=homelab` (container UTS hostname is a container id).
 - Flatten enums the Linux Host template expects as metric names (`system.cpu.time.user`, `system.filesystem.usage.used`, `system.disk.io.write`, `system.network.io.receive`, …). Native OTLP keeps `state`/`direction` on the datapoint; memory stays `system.memory.usage` + `state` because that panel already matches.
+- Process panels need `process.owner`. The collector mounts host `/etc/passwd` and `/etc/group`, and sets `unknown` when a UID has no name.
 
 Exporter: OTLP/HTTP to `api.honeycomb.io`. Environments ignore `x-honeycomb-dataset` for metrics and store them in dataset **`metrics`**.
 
