@@ -13,6 +13,8 @@ Uses [Determinate Nix](https://determinate.systems/) and
 
 **System** (NixOS) and **apps** (Compose) are deployed separately on purpose.
 
+OpenTelemetry (Caddy traces + host metrics → Honeycomb): [`docs/opentelemetry.md`](docs/opentelemetry.md).
+
 ## Workstation shell
 
 Rare tools live in the flake devShell (not home-manager). From a checkout:
