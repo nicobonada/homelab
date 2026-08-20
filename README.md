@@ -72,6 +72,12 @@ sops secrets/vzdump-b2.yaml
 
 Age recipients: `.sops.yaml` (workstation user + lab host).
 
+## CI
+
+GitHub Actions runs [`scripts/preflight`](scripts/preflight) on pull
+requests and on `main` (eval + workstation shell smoke + lab toplevel
+build). That is not a remote switch and does not deploy Compose stacks.
+
 ## License
 
 [MIT](./LICENSE) — use and adapt freely; no warranty.
