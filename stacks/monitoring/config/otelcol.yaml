@@ -28,6 +28,60 @@ processors:
         statements:
           - set(datapoint.time, TruncateTime(datapoint.time, Duration("1s")))
 
+  # Linux Host board expects compacted names (system.cpu.time.user, …).
+  # Native OTLP keeps the enum on the datapoint (state/direction). Copy + rename.
+  metrics_transform/flatten:
+    transforms:
+      - include: system.cpu.time
+        match_type: strict
+        experimental_match_labels: {state: user}
+        action: insert
+        new_name: system.cpu.time.user
+      - include: system.cpu.time
+        match_type: strict
+        experimental_match_labels: {state: system}
+        action: insert
+        new_name: system.cpu.time.system
+      - include: system.cpu.time
+        match_type: strict
+        experimental_match_labels: {state: idle}
+        action: insert
+        new_name: system.cpu.time.idle
+      - include: system.disk.io
+        match_type: strict
+        experimental_match_labels: {direction: read}
+        action: insert
+        new_name: system.disk.io.read
+      - include: system.disk.io
+        match_type: strict
+        experimental_match_labels: {direction: write}
+        action: insert
+        new_name: system.disk.io.write
+      - include: system.filesystem.usage
+        match_type: strict
+        experimental_match_labels: {state: used}
+        action: insert
+        new_name: system.filesystem.usage.used
+      - include: system.network.io
+        match_type: strict
+        experimental_match_labels: {direction: receive}
+        action: insert
+        new_name: system.network.io.receive
+      - include: system.network.io
+        match_type: strict
+        experimental_match_labels: {direction: transmit}
+        action: insert
+        new_name: system.network.io.transmit
+
+  filter/drop_unflattened:
+    error_mode: ignore
+    metrics:
+      metric:
+        - 'name == "system.cpu.time"'
+        - 'name == "system.disk.io"'
+        - 'name == "system.filesystem.usage"'
+        - 'name == "system.network.io"'
+
   # Drop loop/tmpfs/overlay/veth noise (NixOS + Docker otherwise explode cardinality).
   filter/drop_virtual:
     error_mode: ignore
@@ -85,6 +139,8 @@ service:
           resource_detection,
           resource,
           filter/drop_virtual,
+          metrics_transform/flatten,
+          filter/drop_unflattened,
           transform/truncate_time,
           batch,
         ]

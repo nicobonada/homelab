@@ -38,7 +38,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  # Linux Host board: hostmetrics → Honeycomb dataset linux-host (60s).
+  # Linux Host board: hostmetrics → Honeycomb dataset metrics (60s).
   # pid:host + /hostfs so scrapers see the VM, not this container.
   otelcol:
     image: otel/opentelemetry-collector-contrib:0.159.0

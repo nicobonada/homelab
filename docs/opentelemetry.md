@@ -6,7 +6,7 @@ Apps besides Caddy are not instrumented.
 | Signal   | Source                         | How it is sent                         | Honeycomb dataset |
 |----------|--------------------------------|----------------------------------------|-------------------|
 | Traces   | Caddy (`tracing { span caddy }`) | Official Caddy image → OTLP/gRPC       | `caddy` (from `OTEL_SERVICE_NAME`) |
-| Metrics  | Host (CPU, mem, disk, net, processes) | `otelcol` `host_metrics` receiver, 60s | `linux-host` (exporter header) |
+| Metrics  | Host (CPU, mem, disk, net, processes) | `otelcol` `host_metrics` receiver, 60s | `metrics` (Honeycomb Environments native metrics dataset) |
 
 Environment: **test** (team `nico-testing`). One ingest key in 1Password Environment **Homelab** (`HONEYCOMB_API_KEY`), materialized into both stack `.env` files by `scripts/deploy-containers`.
 
@@ -18,7 +18,7 @@ browser / Gatus ──► Caddy ──OTLP/gRPC──► Honeycomb  (traces, dat
 host /proc /sys
       ▲
 otelcol (privileged, pid:host, /hostfs)
-      └──OTLP/HTTP──► Honeycomb  (metrics, dataset linux-host)
+      └──OTLP/HTTP──► Honeycomb  (metrics dataset; Linux Host board)
 ```
 
 ## Traces: Caddy
@@ -53,12 +53,13 @@ Processors:
 - Drop loop/ram/zram, `veth*`/`br-*`/`docker*`, `lo`, and pseudo filesystems (tmpfs, overlay, cgroup, …). NixOS + Docker otherwise explode series count.
 - Truncate metric timestamps to 1s so points from one scrape pack together.
 - Set `service.name=linux-host` and `host.name=homelab` (container UTS hostname is a container id).
+- Flatten enums the Linux Host template expects as metric names (`system.cpu.time.user`, `system.filesystem.usage.used`, `system.disk.io.write`, `system.network.io.receive`, …). Native OTLP keeps `state`/`direction` on the datapoint; memory stays `system.memory.usage` + `state` because that panel already matches.
 
-Exporter: OTLP/HTTP to `api.honeycomb.io` with `x-honeycomb-team` and `x-honeycomb-dataset: linux-host`.
+Exporter: OTLP/HTTP to `api.honeycomb.io`. Environments ignore `x-honeycomb-dataset` for metrics and store them in dataset **`metrics`**.
 
 Apply: `./scripts/deploy-containers monitoring` (rsyncs `config/` including `otelcol.yaml`). Config changes need a recreate (`--force-recreate otelcol`); the process does not watch the file.
 
-After a few minutes of data: Honeycomb → env **test** → Boards → Templates → **Linux Host** → dataset `linux-host`.
+After a few minutes of data: Honeycomb → env **test** → Boards → Templates → **Linux Host** → dataset **`metrics`**.
 
 ## Free-plan usage
 

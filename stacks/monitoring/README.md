@@ -9,7 +9,7 @@ Honeycomb for the Linux Host board (history / query; not a Glances replacement).
 |---------|-----------|---------|
 | Glances | 61208 | Host CPU/RAM/disk for Homepage header |
 | Gatus | **3001** | HTTP(S) checks + status UI (`3001:8080`) |
-| otelcol | (none) | `hostmetrics` every 60s → Honeycomb dataset `linux-host` |
+| otelcol | (none) | `hostmetrics` every 60s → Honeycomb dataset `metrics` |
 
 ### Why host port 3001
 
@@ -57,7 +57,7 @@ cd ~/src/homelab
 
 `deploy-containers` rsyncs `config/` to `/home/nico/monitoring/config` on the lab (remote bind mount).
 
-After data appears in Honeycomb (environment **test**, dataset **linux-host**): Boards → Templates → **Linux Host**.
+After data appears in Honeycomb (environment **test**, dataset **metrics**): Boards → Templates → **Linux Host**. The template wants compacted names (`system.filesystem.usage.used`); the collector flattens `state`/`direction` for those panels.
 
 otelcol is `privileged` + `pid: host` so the `process` scraper can read host `/proc` (template panels). Loop/tmpfs/overlay/`veth*` series are dropped in `otelcol.yaml`.
 
