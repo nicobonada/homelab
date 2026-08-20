@@ -168,7 +168,9 @@ sync_remote_paths() {
       ;;
     caddy)
       ssh -o BatchMode=yes "$host" "mkdir -p /home/nico/caddy/data"
-      rsync -az "$STACKS/caddy/Caddyfile" "$host:/home/nico/caddy/Caddyfile"
+      # --inplace: keep the inode so the container bind-mount sees the new bytes.
+      # A default rsync replace leaves the running container on the old file.
+      rsync -az --inplace "$STACKS/caddy/Caddyfile" "$host:/home/nico/caddy/Caddyfile"
       ;;
   esac
 }
@@ -200,6 +202,10 @@ up_one() {
     cd "$dir"
     # compose.yaml may also list env_file: — file was just materialized
     docker compose "${env_args[@]}" up -d "$@"
+    # Official image does not --watch; reload so an inplace Caddyfile write applies.
+    if [[ $stack == caddy ]]; then
+      docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+    fi
   )
 }
 
