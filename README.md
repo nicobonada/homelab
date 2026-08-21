@@ -78,6 +78,9 @@ GitHub Actions runs [`scripts/preflight`](scripts/preflight) on pull
 requests and on `main` (eval + workstation shell smoke + lab toplevel
 build). That is not a remote switch and does not deploy Compose stacks.
 
+Dependabot opens a weekly grouped PR for `flake.lock` inputs. Merge still
+waits on the preflight check; that is not a remote switch.
+
 ## License
 
 [MIT](./LICENSE) — use and adapt freely; no warranty.
