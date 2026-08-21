@@ -76,7 +76,8 @@ Age recipients: `.sops.yaml` (workstation user + lab host).
 
 GitHub Actions runs [`scripts/preflight --eval`](scripts/preflight) on pull
 requests and on `main` (eval the lab toplevel only). That is not a build, a
-remote switch, or a Compose deploy. Local `./scripts/preflight` still builds
+remote switch, or a Compose deploy. The runner installs Determinate Nix but
+does not log in to FlakeHub Cache. Local `./scripts/preflight` still builds
 the lab image before activate.
 
 Dependabot opens a weekly grouped PR for `flake.lock` inputs. Merge still

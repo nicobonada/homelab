@@ -16,7 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      id-token: write
+      # No id-token: that logs Determinate Nix into FlakeHub Cache via
+      # GitHub OIDC, which 401s unless this repo is enrolled in the cache.
       contents: read
     steps:
       - uses: actions/checkout@v5
