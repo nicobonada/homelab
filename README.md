@@ -74,9 +74,10 @@ Age recipients: `.sops.yaml` (workstation user + lab host).
 
 ## CI
 
-GitHub Actions runs [`scripts/preflight`](scripts/preflight) on pull
-requests and on `main` (eval + workstation shell smoke + lab toplevel
-build). That is not a remote switch and does not deploy Compose stacks.
+GitHub Actions runs [`scripts/preflight --eval`](scripts/preflight) on pull
+requests and on `main` (eval the lab toplevel only). That is not a build, a
+remote switch, or a Compose deploy. Local `./scripts/preflight` still builds
+the lab image before activate.
 
 Dependabot opens a weekly grouped PR for `flake.lock` inputs. Merge still
 waits on the preflight check; that is not a remote switch.

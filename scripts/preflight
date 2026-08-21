@@ -1,20 +1,42 @@
 #!/usr/bin/env bash
-# Preflight for homelab: eval + build lab system (no activate), optional shell smoke.
-# Agent policy: green preflight gates remote switch / publish claims
-# (see Grok rules/homelab.md). Agents use nixos-rebuild, not nh.
+# Preflight for homelab: eval the lab system, optionally smoke the workstation
+# shell and build the toplevel. No activation.
+#   ./scripts/preflight          # local: eval + shell smoke + build (gate switch)
+#   ./scripts/preflight --eval   # CI: eval only (runner is not the lab host)
+# Agents use nixos-rebuild, not nh.
 # Optional closure hint (not a gate): ~/src/grok/scripts/nvd-if-changed homelab
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+eval_only=false
+for arg in "$@"; do
+  case "$arg" in
+    --eval | --eval-only) eval_only=true ;;
+    -h | --help)
+      printf 'usage: %s [--eval]\n' "$(basename "$0")"
+      exit 0
+      ;;
+    *)
+      printf 'preflight: FAIL: unknown argument: %s\n' "$arg" >&2
+      exit 1
+      ;;
+  esac
+done
+
 log() { printf 'preflight: %s\n' "$*"; }
 fail() { printf 'preflight: FAIL: %s\n' "$*" >&2; exit 1; }
 
-log "repo=$ROOT"
+log "repo=$ROOT eval_only=$eval_only"
 
 log "eval nixosConfigurations.homelab"
 nix eval --raw '.#nixosConfigurations.homelab.config.system.build.toplevel.drvPath' >/dev/null
+
+if $eval_only; then
+  log "OK (eval lab toplevel; no build, no remote switch)"
+  exit 0
+fi
 
 # Shell smoke when flake/lock or shell-related files look dirty is agent-side;
 # always cheap enough here and catches lock-only breakage of workstation tools.
