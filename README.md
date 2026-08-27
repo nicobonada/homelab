@@ -15,6 +15,8 @@ Uses [Determinate Nix](https://determinate.systems/) and
 
 OpenTelemetry (Caddy traces + host metrics → Honeycomb): [`docs/opentelemetry.md`](docs/opentelemetry.md).
 
+Music library: Syncthing hub (`syncthing.nix`) plus a guest read-only Samba share `\\homelab\music` (`samba.nix`).
+
 ## Workstation shell
 
 Rare tools live in the flake devShell (not home-manager). From a checkout:

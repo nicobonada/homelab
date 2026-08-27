@@ -11,6 +11,7 @@
     ./vzdump-b2.nix
     ./syncthing.nix
     ./music-backup.nix
+    ./samba.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -149,13 +150,6 @@
       ];
     };
   };
-
-  # Music library replication is Syncthing (syncthing.nix → /mnt/pve-backup/music),
-  # not Samba. Keep samba off unless something else needs a share.
-  services.samba = {
-    enable = false;
-  };
-  services.samba-wsdd.enable = false;
 
   programs.neovim = {
     enable = true;
