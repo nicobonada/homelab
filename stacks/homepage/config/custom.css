@@ -1,8 +1,19 @@
-/* Wrapping card grid. Add/delete entries in services.yaml; do not retune columns. */
+/* Wrapping card grid. Add/delete entries in services.yaml; do not retune columns.
+   minmax is wide enough for four .service-block labels on one row
+   (e.g. UPDATE AVAILABLE, CURRENT REQUESTS). min(…, 100%) so a narrow
+   viewport stays a single column instead of overflowing. */
 .services-list {
   display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)) !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(36rem, 100%), 1fr)) !important;
   gap: 0.75rem;
+}
+
+.service-container {
+  flex-wrap: nowrap !important;
+}
+
+.service-block .uppercase {
+  white-space: nowrap;
 }
 
 #bookmarks ul {

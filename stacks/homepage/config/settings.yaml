@@ -14,7 +14,7 @@ layout:
   # columns are a Tailwind fallback; custom.css auto-fills .services-list
   Services:
     style: row
-    columns: 4
+    columns: 3
     header: false
   Quick:
     style: row
