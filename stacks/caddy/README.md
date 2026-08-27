@@ -7,6 +7,7 @@ go to Honeycomb. **Not** on the public internet. Tailscale Serve stays as-is.
 |--------|---------|
 | `${CADDY_BIND}:80` | HTTP → HTTPS redirect |
 | `${CADDY_BIND}:443` | TLS (`local_certs`) |
+| `:2019` in-container | Admin API (Homepage widget). Shared `monitoring_default` only; not published. |
 
 ## Hosts
 
@@ -25,7 +26,9 @@ hypervisor is a different machine, so Homepage `siteMonitor` and Gatus
 hairpin here. PVE returns 501 for HEAD; Caddy sends GET upstream for those.
 
 Other Homepage widgets and Gatus probes keep using `host.docker.internal` —
-do not route those scrapes through Caddy.
+do not route those scrapes through Caddy. The Caddy card itself talks to
+`http://caddy:2019` on `monitoring_default` (admin API; no auth — keep it
+off the host publish list).
 
 ## Trust the local CA
 

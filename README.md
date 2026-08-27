@@ -62,7 +62,7 @@ Homelab env keeps API tokens only.
 
 ### Homepage widget secrets
 
-Wired widgets: Proxmox, Technitium, Tailscale, Syncthing. Tokens live in
+Wired widgets: Proxmox, Caddy, Technitium, Tailscale, Syncthing. Tokens live in
 1Password Environment **Homelab**; Tailscale access tokens max **90 days** —
 rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
 

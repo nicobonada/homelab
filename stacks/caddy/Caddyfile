@@ -7,6 +7,9 @@
 
 {
 	local_certs
+	# Wildcard listen so Homepage (monitoring_default) can scrape the admin
+	# API. Not published on the host or tailnet. Loopback still works for reload.
+	admin :2019
 }
 
 dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, pve.lab.bonada.ca {

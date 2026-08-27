@@ -26,3 +26,12 @@ services:
       - /home/nico/caddy/data:/data
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      # Homepage already joins this; widget URL is http://caddy:2019.
+      - monitoring
+
+networks:
+  monitoring:
+    external: true
+    name: monitoring_default
