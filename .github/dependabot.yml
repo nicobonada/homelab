@@ -1,11 +1,11 @@
 version: 2
 updates:
-  # GitHub-native flake.lock bumps (public repos only). One weekly PR for
+  # GitHub-native flake.lock bumps (public repos only). One daily PR for
   # all inputs so the lab flake does not get a PR per input.
   - package-ecosystem: nix
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
     groups:
       flake-inputs:
         patterns:
