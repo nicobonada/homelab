@@ -5,6 +5,29 @@
 # One group: custom.css wraps .services-list (add/delete here; do not retune columns).
 
 - Services:
+    - Caddy:
+        icon: sh-caddy
+        description: Reverse proxy
+        server: local
+        container: caddy
+        showStats: true
+        # Admin API on monitoring_default; not published on the host.
+        widget:
+          type: caddy
+          url: http://caddy:2019
+
+    - Gatus:
+        icon: sh-gatus
+        href: https://status.lab.bonada.ca
+        description: Monitor status
+        siteMonitor: http://host.docker.internal:3001
+        server: local
+        container: gatus
+        showStats: true
+        widget:
+          type: gatus
+          url: http://host.docker.internal:3001
+
     - Proxmox:
         icon: sh-proxmox
         href: https://pve.lab.bonada.ca
@@ -18,17 +41,6 @@
           password: "{{HOMEPAGE_VAR_PVE_SECRET}}"
           node: pve
           fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
-
-    - Caddy:
-        icon: sh-caddy
-        description: Reverse proxy
-        server: local
-        container: caddy
-        showStats: true
-        # Admin API on monitoring_default; not published on the host.
-        widget:
-          type: caddy
-          url: http://caddy:2019
 
     - Technitium:
         icon: sh-technitium
@@ -54,18 +66,6 @@
           url: http://host.docker.internal:8384
           key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
           fields: ["connected", "synced", "errors", "storage"]
-
-    - Gatus:
-        icon: sh-gatus
-        href: https://status.lab.bonada.ca
-        description: Monitor status
-        siteMonitor: http://host.docker.internal:3001
-        server: local
-        container: gatus
-        showStats: true
-        widget:
-          type: gatus
-          url: http://host.docker.internal:3001
 
     - Grimmory:
         icon: sh-booklore
