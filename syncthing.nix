@@ -42,6 +42,8 @@ in
     guiAddress = "0.0.0.0:8384";
     overrideDevices = true;
     overrideFolders = true;
+    # Do not set settings.gui: 26.05 syncthing-init PUTs /rest/config/gui
+    # and rotates the API key (nixpkgs#428808). 26.11 uses PATCH (#529449).
     settings = {
       devices = devices;
       folders = {
@@ -55,10 +57,6 @@ in
           label = "beets-state";
           path = beetsPath;
         };
-      };
-      gui = {
-        # Reverse-proxy Host is sync.lab.bonada.ca / host.docker.internal, not the listen address.
-        insecureSkipHostcheck = true;
       };
       options = {
         urAccepted = -1;
