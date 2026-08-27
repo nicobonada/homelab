@@ -44,13 +44,6 @@
           key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
           fields: ["connected", "synced", "errors", "storage"]
 
-    - Samba:
-        icon: samba.png
-        href: smb://homelab/music
-        description: Music library (read-only)
-        # SMB, not HTTP — no siteMonitor. ICMP of the lab host is the live check.
-        ping: host.docker.internal
-
     - Gatus:
         icon: sh-gatus
         href: https://status.lab.bonada.ca

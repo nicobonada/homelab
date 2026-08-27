@@ -18,3 +18,6 @@
     - Backblaze:
         - abbr: B2
           href: https://secure.backblaze.com/b2_buckets.htm
+    - Samba:
+        - abbr: SMB
+          href: smb://homelab/music
