@@ -32,13 +32,15 @@ off the host publish list).
 
 ## Trust the local CA
 
-Browsers warn until each seat trusts Caddy’s CA (`/home/nico/caddy/data/caddy/pki/authorities/local/root.crt` on the lab). Copy it off the container or that path, then import (Chrome/Chromium NSS):
+Seats trust Caddy’s CA from nix-config (`nixos/common/lab-ca.nix`): system
+bundle plus a Brave managed policy. Switch OS on the seat; fully quit Brave
+so the policy loads.
+
+If the lab PKI is recreated, replace `nixos/common/caddy-lab-root.crt` from:
 
 ```fish
-certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n "Caddy lab" -i root.crt
+ssh homelab -- docker exec caddy cat /data/caddy/pki/authorities/local/root.crt
 ```
-
-Or add the file under nix-config `security.pki.certificateFiles` and switch.
 
 ## Secrets
 
