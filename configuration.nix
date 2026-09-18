@@ -42,7 +42,7 @@
     networkmanager.enable = true;
   };
 
-  time.timeZone = "America/Toronto";
+  time.timeZone = "America/Argentina/Mendoza";
 
   users.users.nico = {
     isNormalUser = true;

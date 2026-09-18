@@ -32,9 +32,9 @@
     expanded: false
 
 - openmeteo:
-    label: Toronto
-    latitude: 43.65
-    longitude: -79.38
-    timezone: America/Toronto
+    label: Mendoza
+    latitude: -33.05
+    longitude: -68.88
+    timezone: America/Argentina/Mendoza
     units: metric
     cache: 5
