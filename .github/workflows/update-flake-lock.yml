@@ -1,0 +1,40 @@
+name: update-flake-lock
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 12:00 UTC on odd calendar dates. GitHub cron has no 48-hour
+    # interval, so a month boundary can be one day apart.
+    - cron: "0 12 */2 * *"
+
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      # Dispatch CI below. A PR opened with this token does not start
+      # workflows by itself, and main requires a green preflight on the SHA.
+      actions: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: DeterminateSystems/determinate-nix-action@v3
+      - id: lock
+        uses: DeterminateSystems/update-flake-lock@v29
+        with:
+          pr-title: "build(flake): update flake.lock"
+          commit-msg: "build(flake): update flake.lock"
+          pr-labels: dependencies
+          pr-body: |
+            Automated `nix flake update` of every flake input.
+
+            ```
+            {{ env.GIT_COMMIT_MESSAGE }}
+            ```
+
+            This does not remote-switch or deploy Compose. Merge only after `preflight` is green.
+      - name: Run preflight on the lock bump
+        if: steps.lock.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref update_flake_lock_action
