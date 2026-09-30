@@ -97,6 +97,12 @@
     # Tailscale SSH (identity) as primary remote path; see ACLs in tailscale-policy.
     extraSetFlags = [ "--ssh" ];
   };
+  # A remote switch rides this Tailscale SSH session. Restarting either
+  # unit drops it and aborts the rest of the activation. New binaries wait
+  # for a reboot; these packages change rarely.
+  systemd.services.sshd.restartIfChanged = false;
+  systemd.services.tailscaled.restartIfChanged = false;
+
   services.resolved.enable = true;
 
   services.technitium-dns-server = {
