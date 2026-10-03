@@ -11,17 +11,18 @@ jobs:
   lockfile:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-      # Dispatch CI below. A PR opened with this token does not start
-      # workflows by itself, and main requires a green preflight on the SHA.
-      actions: write
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: DeterminateSystems/determinate-nix-action@v3
-      - id: lock
-        uses: DeterminateSystems/update-flake-lock@v29
+      - uses: DeterminateSystems/update-flake-lock@v29
         with:
+          # User token, not GITHUB_TOKEN. A pull request opened by
+          # github-actions[bot] leaves preflight waiting for approval,
+          # and Protect main ignores a workflow_dispatch run of that
+          # check. LOCK_UPDATE_TOKEN is a fine-grained token with
+          # contents and pull-requests write on nix-config and homelab.
+          token: ${{ secrets.LOCK_UPDATE_TOKEN }}
           pr-title: "build(flake): update flake.lock"
           commit-msg: "build(flake): update flake.lock"
           pr-labels: dependencies
@@ -33,8 +34,3 @@ jobs:
             ```
 
             This does not remote-switch or deploy Compose. Merge only after `preflight` is green.
-      - name: Run preflight on the lock bump
-        if: steps.lock.outputs.pull-request-number != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run ci.yml --ref update_flake_lock_action
