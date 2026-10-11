@@ -3,9 +3,8 @@ name: update-flake-lock
 on:
   workflow_dispatch:
   schedule:
-    # 12:00 UTC on odd calendar dates. GitHub cron has no 48-hour
-    # interval, so a month boundary can be one day apart.
-    - cron: "0 12 */2 * *"
+    # 12:00 UTC every day.
+    - cron: "0 12 * * *"
 
 jobs:
   lockfile:

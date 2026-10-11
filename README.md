@@ -82,9 +82,9 @@ remote switch, or a Compose deploy. The runner installs Determinate Nix but
 does not log in to FlakeHub Cache. Local `./scripts/preflight` still builds
 the lab image before activate.
 
-`update-flake-lock` opens a pull request every other day (12:00 UTC on odd
-calendar dates) that runs `nix flake update` for every input. Merge still
-waits on the preflight check; that is not a remote switch or a Compose deploy.
+`update-flake-lock` opens a pull request every day (12:00 UTC) that runs
+`nix flake update` for every input. Merge still waits on the preflight
+check; that is not a remote switch or a Compose deploy.
 
 ## License
 
