@@ -41,7 +41,7 @@ services:
   # Linux Host board: hostmetrics → Honeycomb dataset metrics (60s).
   # pid:host + /hostfs so scrapers see the VM, not this container.
   otelcol:
-    image: otel/opentelemetry-collector-contrib:0.159.0
+    image: otel/opentelemetry-collector-contrib:0.162.0
     container_name: otelcol
     restart: unless-stopped
     pid: host

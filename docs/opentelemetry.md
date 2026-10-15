@@ -42,7 +42,7 @@ Collector in the monitoring stack scrapes the **VM**, not the sidecar. That is w
 
 | Piece | Where |
 |-------|--------|
-| Image `otel/opentelemetry-collector-contrib:0.159.0` | `stacks/monitoring/compose.yaml` (`otelcol`) |
+| Image `otel/opentelemetry-collector-contrib:0.162.0` | `stacks/monitoring/compose.yaml` (`otelcol`) |
 | Pipeline | `stacks/monitoring/config/otelcol.yaml` |
 | Health | `http://otelcol:13133` (Gatus, compose DNS, no host port) |
 
