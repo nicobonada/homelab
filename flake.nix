@@ -37,6 +37,24 @@
           determinate.nixosModules.default
           sops-nix.nixosModules.sops
           ./configuration.nix
+          # nixos-26.05 (cd4ea8d) fetches TechnitiumLibrary tag
+          # dns-server-15.6.2, which 404s. The tag is dns-server-v15.6.2.
+          # release-26.05 960d8f5663 fixes the string; the channel has not
+          # moved. Drop this overlay once nixos-26.05 contains that commit.
+          {
+            nixpkgs.overlays = [
+              (final: prev: {
+                technitium-dns-server-library = prev.technitium-dns-server-library.overrideAttrs (old: {
+                  src = prev.fetchFromGitHub {
+                    owner = "TechnitiumSoftware";
+                    repo = "TechnitiumLibrary";
+                    tag = "dns-server-v${old.version}";
+                    hash = "sha256-fb5o4AlKFU/oPypD7T3sNoUdY7nHS4skGovDSLNzpI0=";
+                  };
+                });
+              })
+            ];
+          }
         ];
       };
 
