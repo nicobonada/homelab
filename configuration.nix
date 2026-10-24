@@ -12,6 +12,7 @@
     ./syncthing.nix
     ./music-backup.nix
     ./samba.nix
+    ./printing.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
