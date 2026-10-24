@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   ...
 }:
@@ -29,7 +30,18 @@
     extraConf = ''
       DefaultEncryption Never
     '';
+    # CreateSelfSignedCerts is a cups-files.conf directive.
+    # cupsd.conf ignores it, so the cert would still be created.
+    extraFilesConf = ''
+      CreateSelfSignedCerts No
+    '';
   };
+
+  systemd.services.cups.preStart = lib.mkAfter ''
+    # Cupsd advertises IPPS when a cert exists. Phones then refuse
+    # the self-signed listener. Keep the share on cleartext IPP.
+    rm -f /var/lib/cups/ssl/server.crt /var/lib/cups/ssl/server.key
+  '';
 
   services.avahi = {
     enable = true;
