@@ -24,3 +24,42 @@ jobs:
       - uses: DeterminateSystems/determinate-nix-action@v3
       - name: Preflight
         run: ./scripts/preflight --eval
+
+  # Fast-forward main to the lock PR head once preflight has passed.
+  # GitHub merge, squash, and rebase create a new commit, and Protect
+  # main rejects that SHA. This job lives in CI because a workflow that
+  # only listens for workflow_run gets a failed stub run on every push.
+  land-lock:
+    needs: preflight
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'update_flake_lock_action' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.title == 'build(flake): update flake.lock'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          token: ${{ secrets.LOCK_UPDATE_TOKEN }}
+      - name: Fast-forward main
+        env:
+          GH_TOKEN: ${{ secrets.LOCK_UPDATE_TOKEN }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git cat-file -e "$SHA^{commit}"
+          if git merge-base --is-ancestor "$SHA" origin/main; then
+            echo "$SHA already on main"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor origin/main "$SHA"; then
+            echo "main is not an ancestor of $SHA; leaving the PR open"
+            exit 1
+          fi
+          git push origin "$SHA:refs/heads/main"

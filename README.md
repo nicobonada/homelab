@@ -83,7 +83,7 @@ does not log in to FlakeHub Cache. Local `./scripts/preflight` still builds
 the lab image before activate.
 
 `update-flake-lock` opens a pull request every day (12:00 UTC) that runs
-`nix flake update` for every input. When `preflight` is green, `land-lock`
+`nix flake update` for every input. When `preflight` is green, CI
 fast-forwards `main` to that commit. That is not a remote switch or a
 Compose deploy.
 
