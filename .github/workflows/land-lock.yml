@@ -1,0 +1,69 @@
+name: land-lock
+
+# Fast-forward main to the lock PR's SHA after preflight succeeds.
+# GitHub merge, squash, and rebase create a new commit. Protect main
+# rejects that SHA because preflight never ran on it. This workflow
+# runs from main (workflow_run), so the lock PR cannot edit it or
+# read LOCK_UPDATE_TOKEN. Actions stay read-only; the push uses the
+# fine-grained token.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  fast-forward:
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'update_flake_lock_action' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main
+          token: ${{ secrets.LOCK_UPDATE_TOKEN }}
+      - name: Fast-forward main
+        env:
+          GH_TOKEN: ${{ secrets.LOCK_UPDATE_TOKEN }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          REPO: ${{ github.repository }}
+          LOCK_BRANCH: update_flake_lock_action
+          LOCK_TITLE: build(flake): update flake.lock
+        run: |
+          set -euo pipefail
+          prs=$(gh pr list --repo "$REPO" --head "$LOCK_BRANCH" --state open \
+            --json number,title,headRefOid)
+          count=$(jq 'length' <<<"$prs")
+          if [ "$count" -ne 1 ]; then
+            echo "expected 1 open lock PR, found $count"
+            exit 1
+          fi
+          title=$(jq -r '.[0].title' <<<"$prs")
+          head=$(jq -r '.[0].headRefOid' <<<"$prs")
+          if [ "$title" != "$LOCK_TITLE" ]; then
+            echo "unexpected title: $title"
+            exit 1
+          fi
+          if [ "$head" != "$SHA" ]; then
+            echo "PR head $head is not CI sha $SHA"
+            exit 1
+          fi
+          git fetch origin "$LOCK_BRANCH"
+          git fetch origin main
+          git cat-file -e "$SHA^{commit}"
+          if git merge-base --is-ancestor "$SHA" origin/main; then
+            echo "$SHA already on main"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor origin/main "$SHA"; then
+            echo "main is not an ancestor of $SHA; leaving the PR open"
+            exit 1
+          fi
+          git push origin "$SHA:refs/heads/main"

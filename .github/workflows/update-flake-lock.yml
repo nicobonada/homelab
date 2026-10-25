@@ -32,4 +32,5 @@ jobs:
             {{ env.GIT_COMMIT_MESSAGE }}
             ```
 
-            This does not remote-switch or deploy Compose. Merge only after `preflight` is green.
+            When `preflight` is green, `land-lock` fast-forwards `main`
+            to this commit. That is not a remote switch or a Compose deploy.

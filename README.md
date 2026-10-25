@@ -83,8 +83,9 @@ does not log in to FlakeHub Cache. Local `./scripts/preflight` still builds
 the lab image before activate.
 
 `update-flake-lock` opens a pull request every day (12:00 UTC) that runs
-`nix flake update` for every input. Merge still waits on the preflight
-check; that is not a remote switch or a Compose deploy.
+`nix flake update` for every input. When `preflight` is green, `land-lock`
+fast-forwards `main` to that commit. That is not a remote switch or a
+Compose deploy.
 
 ## License
 
