@@ -11,13 +11,23 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
+  # A workflow with no push trigger gets a failed stub run on every
+  # push ("No jobs were run"). Declaring push makes that a real run.
+  push:
 
 permissions:
   contents: read
 
 jobs:
+  # Keeps the push stub above from failing. Does not fast-forward.
+  ignore-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "land-lock runs after CI, not on this push"
   fast-forward:
     if: >
+      github.event_name == 'workflow_run' &&
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.head_branch == 'update_flake_lock_action' &&
