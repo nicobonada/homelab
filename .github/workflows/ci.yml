@@ -56,10 +56,16 @@ jobs:
           git cat-file -e "$SHA^{commit}"
           if git merge-base --is-ancestor "$SHA" origin/main; then
             echo "$SHA already on main"
-            exit 0
-          fi
-          if ! git merge-base --is-ancestor origin/main "$SHA"; then
+          elif ! git merge-base --is-ancestor origin/main "$SHA"; then
             echo "main is not an ancestor of $SHA; leaving the PR open"
             exit 1
+          else
+            git push origin "$SHA:refs/heads/main"
           fi
-          git push origin "$SHA:refs/heads/main"
+          # Drop this bot branch only. GitHub delete_branch_on_merge
+          # would also delete human topic branches.
+          if git ls-remote --exit-code --heads origin update_flake_lock_action >/dev/null; then
+            git push origin --delete update_flake_lock_action
+          else
+            echo "update_flake_lock_action already gone"
+          fi
