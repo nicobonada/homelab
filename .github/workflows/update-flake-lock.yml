@@ -3,8 +3,9 @@ name: update-flake-lock
 on:
   workflow_dispatch:
   schedule:
-    # 12:00 UTC every day.
-    - cron: "0 12 * * *"
+    # Midnight America/Argentina/Buenos_Aires (03:00 UTC).
+    - cron: "0 0 * * *"
+      timezone: "America/Argentina/Buenos_Aires"
 
 jobs:
   lockfile:
