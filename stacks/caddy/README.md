@@ -3,11 +3,15 @@
 HTTPS reverse proxy for Compose UIs (Caddy local CA). OpenTelemetry traces
 go to Honeycomb. **Not** on the public internet. Tailscale Serve stays as-is.
 
-| Listen | Purpose |
-|--------|---------|
-| `${CADDY_BIND}:80` | HTTP → HTTPS redirect |
-| `${CADDY_BIND}:443` | TLS (`local_certs`) |
+| Listen               | Purpose                                                                      |
+|----------------------|------------------------------------------------------------------------------|
+| host `:80`           | HTTP → HTTPS redirect (published 0.0.0.0)                                    |
+| host `:443`          | TLS (`local_certs`), TCP + UDP                                               |
 | `:2019` in-container | Admin API (Homepage widget). Shared `monitoring_default` only; not published. |
+
+NixOS `caddy-firewall.nix` keeps host 80/443 on `tailscale0` (DOCKER-USER).
+A Tailscale HostIp bind in compose fails on dockerd restart and leaves the
+container running with empty `Networks`.
 
 ## Hosts
 
@@ -47,8 +51,8 @@ ssh homelab -- docker exec caddy cat /data/caddy/pki/authorities/local/root.crt
 Add to 1Password Environment **Homelab** (see `.env.example`):
 
 - `HONEYCOMB_API_KEY` — ingest key
-- `CADDY_BIND` — lab tailnet IPv4
 - `BOOKLORE_PORT` — optional if not 6060
+- `PVE_UPSTREAM` — Proxmox API/UI URL
 
 ```fish
 cd ~/src/homelab

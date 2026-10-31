@@ -29,8 +29,9 @@ endpoints:
   - name: homepage
     group: lab
     # Same host the browser uses. host.docker.internal:3000 sends Host that
-    # Homepage rejects (400, ALLOWED_HOSTS). Hairpin to Caddy on CADDY_BIND works
-    # from this container. Local CA: Gatus tls: is mTLS only, no extra CA file.
+    # Homepage rejects (400, ALLOWED_HOSTS). Hairpin through Caddy at this
+    # name works from this container. Local CA: Gatus tls: is mTLS only, no
+    # extra CA file.
     url: https://dashboard.lab.bonada.ca/api/healthcheck
     interval: 60s
     client:

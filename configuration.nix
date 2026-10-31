@@ -13,6 +13,7 @@
     ./music-backup.nix
     ./samba.nix
     ./printing.nix
+    ./caddy-firewall.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

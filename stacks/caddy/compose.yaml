@@ -1,5 +1,7 @@
 # Reverse proxy for Compose UIs + OTel traces to Honeycomb.
-# Bind is tailnet-only (CADDY_BIND). Do not publish 80/443 on the WAN.
+# Publish 80/443 on 0.0.0.0 (do not bind a Tailscale HostIp: that fails on
+# dockerd restart and leaves Networks empty). NixOS DOCKER-USER keeps those
+# ports on tailscale0; see caddy-firewall.nix.
 # Secrets: 1Password Homelab → .env (gitignored).
 services:
   caddy:
@@ -7,9 +9,9 @@ services:
     container_name: caddy
     restart: unless-stopped
     ports:
-      - "${CADDY_BIND}:80:80"
-      - "${CADDY_BIND}:443:443"
-      - "${CADDY_BIND}:443:443/udp"
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     env_file:
       - .env
     environment:

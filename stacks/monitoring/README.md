@@ -29,7 +29,7 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 
 | Target | URL style | Why |
 |--------|-----------|-----|
-| Homepage | `https://dashboard.lab.bonada.ca/api/healthcheck` | Same Host as the browser. Direct `host.docker.internal:3000` is **400** (Homepage `ALLOWED_HOSTS`). Hairpin to Caddy on `CADDY_BIND` works from this container; `client.insecure` for the Caddy local CA (Gatus has no extra-CA hook). |
+| Homepage | `https://dashboard.lab.bonada.ca/api/healthcheck` | Same Host as the browser. Direct `host.docker.internal:3000` is **400** (Homepage `ALLOWED_HOSTS`). Hairpin through Caddy at that name works from this container; `client.insecure` for the Caddy local CA (Gatus has no extra-CA hook). |
 | Sibling in this compose (Glances) | `http://glances:61208` | Same Docker network as Gatus — **do not** use `host.docker.internal` (hairpin to published 61208 times out from containers; browser/Tailscale still work) |
 | Sibling in this compose (otelcol) | `http://otelcol:13133` | Collector `health_check` extension. No host publish. |
 | Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
