@@ -22,10 +22,14 @@ in
   };
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 2049 ];
 
-  # Create folder roots after virtiofs is up (tmpfiles races nofail mounts).
-  # Existing files stay syncthing-owned until a one-time
-  # chown -R nico:users on the VM (not in git). 0775 so hub Syncthing can
-  # still write after that chown (syncthing is in group users).
+  # First enable: mountd can start before nfs-server writes etab.
+  systemd.services.nfs-mountd.serviceConfig = {
+    Restart = "on-failure";
+    RestartSec = "2s";
+  };
+
+  # Folder roots after virtiofs is up (tmpfiles races nofail mounts).
+  # Trees are nico:users 0775 so hub Syncthing (group users) can write.
   systemd.services.music-share-dirs = {
     description = "Ensure music share paths on pve-backup";
     wantedBy = [
