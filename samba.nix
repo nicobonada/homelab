@@ -3,13 +3,13 @@
   ...
 }:
 let
-  # Same tree as syncthing.nix (hub folder id music). Keep in sync.
+  # Same tree as music-share.nix / syncthing.nix (hub folder id music).
   musicPath = "/mnt/pve-backup/music";
   shareRoot = "/mnt/pve-backup";
 in
 {
-  # Guest, read-only music for TVs / phones / file browsers (not Syncthing peers).
-  # force user: music root is 0750 syncthing:syncthing; guest is nobody.
+  # Guest, read-only music for TVs / phones / file browsers (not Syncthing
+  # peers). Trees are nico:users; force user so guest (nobody) can read.
   services.samba = {
     enable = true;
     openFirewall = true;
@@ -25,8 +25,8 @@ in
         browseable = "yes";
         "read only" = "yes";
         "guest ok" = "yes";
-        "force user" = "syncthing";
-        "force group" = "syncthing";
+        "force user" = "nico";
+        "force group" = "users";
         comment = "Music library (read-only)";
         # Syncthing internals are not media.
         "hide files" = "/.stfolder/.stignore/.stversions/";
@@ -42,8 +42,8 @@ in
   };
 
   systemd.services.samba-smbd = {
-    after = [ "syncthing-share-dirs.service" ];
-    wants = [ "syncthing-share-dirs.service" ];
+    after = [ "music-share-dirs.service" ];
+    wants = [ "music-share-dirs.service" ];
     # Module already requires /var/lib/samba; keep that and wait for virtiofs.
     unitConfig.RequiresMountsFor = lib.mkForce "/var/lib/samba ${shareRoot}";
   };

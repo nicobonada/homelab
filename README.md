@@ -15,7 +15,9 @@ Uses [Determinate Nix](https://determinate.systems/) and
 
 OpenTelemetry (Caddy traces + host metrics → Honeycomb): [`docs/opentelemetry.md`](docs/opentelemetry.md).
 
-Music library: Syncthing hub (`syncthing.nix`) plus a guest read-only Samba share `\\homelab\music` (`samba.nix`).
+Music library: NFSv4 of `/mnt/pve-backup/music` (`music-share.nix`) plus guest
+read-only Samba `\\homelab\music` (`samba.nix`). Syncthing hub remains until
+seats mount NFS.
 
 ## Workstation shell
 

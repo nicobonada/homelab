@@ -11,6 +11,7 @@
     ./vzdump-b2.nix
     ./syncthing.nix
     ./music-backup.nix
+    ./music-share.nix
     ./samba.nix
     ./printing.nix
     ./caddy-firewall.nix
@@ -48,6 +49,7 @@
 
   users.users.nico = {
     isNormalUser = true;
+    uid = 1000;
     extraGroups = [
       "wheel"
       "networkmanager"

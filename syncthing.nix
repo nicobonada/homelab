@@ -70,27 +70,12 @@ in
   # password (Syncthing Actions → Settings) now that the console is reachable.
   networking.firewall.allowedTCPPorts = [ 8384 ];
 
-  # Create folder roots after virtiofs is up (tmpfiles races nofail mounts).
-  systemd.services.syncthing-share-dirs = {
-    description = "Ensure Syncthing paths on pve-backup";
-    wantedBy = [ "syncthing.service" ];
-    before = [ "syncthing.service" ];
-    after = [ "local-fs.target" ];
-    unitConfig.RequiresMountsFor = [ shareRoot ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "syncthing-share-dirs" ''
-        set -euo pipefail
-        ${pkgs.coreutils}/bin/install -d -o syncthing -g syncthing -m 0750 ${musicPath}
-        ${pkgs.coreutils}/bin/install -d -o syncthing -g syncthing -m 0750 ${beetsPath}
-      '';
-    };
-  };
+  # Write 0775 nico:users trees (music-share-dirs) after a later chown.
+  users.users.syncthing.extraGroups = [ "users" ];
 
   systemd.services.syncthing = {
-    requires = [ "syncthing-share-dirs.service" ];
-    after = [ "syncthing-share-dirs.service" ];
+    requires = [ "music-share-dirs.service" ];
+    after = [ "music-share-dirs.service" ];
     unitConfig.RequiresMountsFor = [ shareRoot ];
   };
 }
