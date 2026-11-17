@@ -12,7 +12,7 @@
 	admin :2019
 }
 
-dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, pve.lab.bonada.ca {
+dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, aven.lab.bonada.ca, pve.lab.bonada.ca {
 	tracing {
 		span caddy
 	}
@@ -45,6 +45,11 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 	@sync host sync.lab.bonada.ca
 	handle @sync {
 		reverse_proxy host.docker.internal:8384
+	}
+
+	@aven host aven.lab.bonada.ca
+	handle @aven {
+		reverse_proxy host.docker.internal:3746
 	}
 
 	# Hypervisor is not on this VM. Upstream URL stays in Homelab env (private).

@@ -1,0 +1,15 @@
+# Aven E2E sync server. Data (sqlite + server.yaml) is in the named volume;
+# first-run `server setup` is live on the lab, not in git. Image pin matches
+# nix-config llm-agents packages.aven; bump this tag with that lock.
+services:
+  aven:
+    image: ghcr.io/raine/aven:0.1.56
+    container_name: aven-sync
+    ports:
+      - "127.0.0.1:3746:3746"
+    volumes:
+      - aven-data:/data
+    restart: unless-stopped
+    stop_grace_period: 15s
+volumes:
+  aven-data:

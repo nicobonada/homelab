@@ -12,6 +12,7 @@ root; this directory is **apps only** and is deployed separately.
 | `homepage/` | Dashboard (+ `config/`) |
 | `monitoring/` | Glances + Gatus + Honeycomb hostmetrics |
 | `caddy/` | HTTP front door + Honeycomb traces (tailnet only) |
+| `aven-sync/` | Aven E2E task sync |
 
 Each stack has `compose.yaml`. Deploy secrets live in the 1Password Environment
 **Homelab** (not in this public tree). Example key lists remain as `*.env.example`
