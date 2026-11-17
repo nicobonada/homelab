@@ -49,7 +49,7 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 
 	@aven host aven.lab.bonada.ca
 	handle @aven {
-		reverse_proxy host.docker.internal:3746
+		reverse_proxy aven-sync:3746
 	}
 
 	# Hypervisor is not on this VM. Upstream URL stays in Homelab env (private).

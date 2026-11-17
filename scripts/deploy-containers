@@ -215,7 +215,8 @@ target=$1
 shift
 
 if [[ $target == --all ]]; then
-  preferred=(grimmory papra homepage monitoring)
+  # caddy before aven-sync: aven joins external caddy_default.
+  preferred=(grimmory papra homepage monitoring caddy aven-sync)
   for s in "${preferred[@]}"; do
     [[ -f $STACKS/$s/compose.yaml ]] || continue
     up_one "$s" "$@"
