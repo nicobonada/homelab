@@ -19,6 +19,9 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # 487M ESP; each kernel+initrd is ~41M. Without a cap, lock switches
+  # fail copying the new initrd (ENOSPC).
+  boot.loader.systemd-boot.configurationLimit = 8;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   swapDevices = [
