@@ -72,9 +72,45 @@ rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
 
 ```text
 sops secrets/vzdump-b2.yaml
+sops secrets/atticd.yaml
 ```
 
 Age recipients: `.sops.yaml` (workstation user + lab host).
+
+## Nix binary cache (Attic)
+
+`atticd` on this VM, HTTPS via Caddy at `https://cache.lab.bonada.ca/`.
+Seats pull NARs that miss `cache.nixos.org` (Luciole, crawl-tiles, …).
+Storage is `/var/lib/atticd` on the guest root (90-day default retention).
+Do not put it on the T7 music/backup share.
+
+After OS switch:
+
+1. Technitium: A record `cache.lab.bonada.ca` → this host (same as the
+   other `*.lab.bonada.ca` names). Zone state stays on the VM.
+2. Deploy Caddy, Homepage, and monitoring so the name, dashboard card,
+   and Gatus probe exist.
+3. On the VM, mint a push token and create cache `lab`:
+
+   ```text
+   sudo atticd-atticadm make-token --sub nico --validity '10 years' \
+     --pull lab --push lab --create-cache lab --configure-cache lab
+   ```
+
+   From a seat (token is a JWT; keep it in 1Password, not git):
+
+   ```text
+   attic login lab https://cache.lab.bonada.ca <token>
+   attic cache create lab
+   attic cache configure lab --public
+   attic cache info lab
+   ```
+
+4. Add the printed public key plus substituter
+   `https://cache.lab.bonada.ca/lab` on the seats (nix-config). Then
+   `attic push lab <store-path>` after a luciole or crawl build.
+   New crawl trunk revs still compile once; ccache covers the C++
+   increment. The cache only reuses a finished store path.
 
 ## CI
 

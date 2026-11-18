@@ -15,6 +15,7 @@
     ./samba.nix
     ./printing.nix
     ./caddy-firewall.nix
+    ./atticd.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

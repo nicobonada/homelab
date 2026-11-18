@@ -83,6 +83,16 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
 
+  - name: attic
+    group: infra
+    url: https://cache.lab.bonada.ca/
+    interval: 60s
+    client:
+      insecure: true
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] < 500"
+
   - name: proxmox
     group: infra
     url: https://pve.lab.bonada.ca

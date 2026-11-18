@@ -25,6 +25,7 @@ container running with empty `Networks`.
 | `https://sync.lab.bonada.ca` | Syncthing GUI `:8384` |
 | `https://aven.lab.bonada.ca` | Aven sync (compose DNS `aven-sync:3746`) |
 | `https://pve.lab.bonada.ca` | Proxmox (`PVE_UPSTREAM`, usually `:8006`) |
+| `https://cache.lab.bonada.ca` | Attic (`host.docker.internal:8080`) |
 
 Glances and Technitium are not behind this proxy. Proxmox is: the
 hypervisor is a different machine, so Homepage `siteMonitor` and Gatus

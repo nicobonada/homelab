@@ -42,6 +42,12 @@
           node: pve
           fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
 
+    - Attic:
+        icon: si-nixos
+        href: https://cache.lab.bonada.ca/lab/nix-cache-info
+        description: Nix binary cache
+        siteMonitor: https://cache.lab.bonada.ca/
+
     - Technitium:
         icon: sh-technitium
         href: https://dns.lab.bonada.ca

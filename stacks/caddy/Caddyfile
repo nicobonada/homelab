@@ -12,7 +12,7 @@
 	admin :2019
 }
 
-dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, aven.lab.bonada.ca, pve.lab.bonada.ca {
+dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, sync.lab.bonada.ca, aven.lab.bonada.ca, pve.lab.bonada.ca, cache.lab.bonada.ca {
 	tracing {
 		span caddy
 	}
@@ -74,6 +74,18 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 			transport http {
 				tls
 				tls_insecure_skip_verify
+			}
+		}
+	}
+
+	# Host atticd. Long timeouts: luciole / crawl-tiles NAR uploads.
+	@cache host cache.lab.bonada.ca
+	handle @cache {
+		reverse_proxy host.docker.internal:8080 {
+			flush_interval -1
+			transport http {
+				read_timeout 1h
+				write_timeout 1h
 			}
 		}
 	}
