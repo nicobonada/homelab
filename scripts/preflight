@@ -2,7 +2,7 @@
 # Preflight for homelab: eval the lab system, optionally smoke the workstation
 # shell and build the toplevel. No activation.
 #   ./scripts/preflight          # local: eval + shell smoke + build (gate switch)
-#   ./scripts/preflight --eval   # CI: eval only (runner is not the lab host)
+#   ./scripts/preflight --eval   # CI: eval + stacks YAML/Caddyfile
 # Agents apply with nh os switch --target-host (skill homelab).
 set -euo pipefail
 
@@ -32,8 +32,28 @@ log "repo=$ROOT eval_only=$eval_only"
 log "eval nixosConfigurations.homelab"
 nix eval --raw '.#nixosConfigurations.homelab.config.system.build.toplevel.drvPath' >/dev/null
 
+# Cheap, no Docker daemon. CI --eval must catch a broken compose.yaml
+# or Caddyfile; Protect main only runs this script.
+log "parse compose + homepage YAML; validate Caddyfile"
+nix shell --inputs-from . nixpkgs#yq-go nixpkgs#caddy -c bash -euo pipefail -c '
+  shopt -s nullglob
+  files=(stacks/*/compose.yaml stacks/homepage/config/*.yaml)
+  (( ${#files[@]} > 0 )) || { echo "preflight: FAIL: no YAML stacks" >&2; exit 1; }
+  for f in "${files[@]}"; do
+    yq -e "." "$f" >/dev/null
+  done
+  # PVE_UPSTREAM is required by the Caddyfile; dummy is syntax-only.
+  export PVE_UPSTREAM="${PVE_UPSTREAM:-https://127.0.0.1:8006}"
+  export BOOKLORE_PORT="${BOOKLORE_PORT:-6060}"
+  if ! caddy_out=$(caddy validate --adapter caddyfile \
+       --config stacks/caddy/Caddyfile 2>&1); then
+    printf "%s\n" "$caddy_out" >&2
+    exit 1
+  fi
+'
+
 if $eval_only; then
-  log "OK (eval lab toplevel; no build, no remote switch)"
+  log "OK (eval lab toplevel + stacks YAML/Caddyfile; no build, no remote switch)"
   exit 0
 fi
 

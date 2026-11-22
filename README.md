@@ -123,11 +123,11 @@ After OS switch:
 ## CI
 
 GitHub Actions runs [`scripts/preflight --eval`](scripts/preflight) on pull
-requests only (eval the lab toplevel only). Fast-forwarding the same SHA
-onto `main` does not re-run it. That is not a build, a remote switch, or a
-Compose deploy. The runner installs Determinate Nix but does not log in to
-FlakeHub Cache. Local `./scripts/preflight` still builds the lab image
-before activate.
+requests only (eval the lab toplevel, parse compose/homepage YAML, and
+validate the Caddyfile). Fast-forwarding the same SHA onto `main` does
+not re-run it. That is not a build, a remote switch, or a Compose deploy.
+The runner installs Determinate Nix but does not log in to FlakeHub Cache.
+Local `./scripts/preflight` still builds the lab image before activate.
 
 `update-flake-lock` opens a pull request every day at midnight Argentina
 time (`America/Argentina/Buenos_Aires`) that runs
