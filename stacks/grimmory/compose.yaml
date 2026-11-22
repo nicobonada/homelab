@@ -1,6 +1,6 @@
 # Grimmory (books) + MariaDB
 # Data dirs stay on the host under /home/nico/grimmory/
-# Secrets: copy .env.example → .env
+# Secrets: 1Password Homelab → .env (gitignored).
 services:
   grimmory:
     image: grimmory/grimmory:nightly

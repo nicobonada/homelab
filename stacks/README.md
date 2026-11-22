@@ -36,6 +36,10 @@ cd ~/src/homelab
 # ./scripts/deploy-containers --all
 ```
 
+`--all` starts with monitoring (homepage and caddy join
+`monitoring_default`), then the apps, then caddy, then aven-sync
+(joins `caddy_default`).
+
 Default remote: the repo devShell sets `DOCKER_HOST=ssh://nico@homelab` (override if needed).
 
 Mount path (override with `HOMELAB_ENV_MOUNT`):

@@ -5,7 +5,7 @@
 # accidental local secrets
 token
 
-# Decrypted stack env (from sops -d secrets/<stack>.env); never commit plaintext
+# Stack env materialized from 1Password Homelab; never commit plaintext
 stacks/**/.env
 stacks/**/secrets.env
 stacks/**/*-admin.env

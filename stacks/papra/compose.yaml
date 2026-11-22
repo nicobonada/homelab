@@ -1,6 +1,6 @@
 # Papra — documents
 # Data: /home/nico/papra/app-data on the host
-# Secrets: copy .env.example → .env
+# Secrets: 1Password Homelab → .env (gitignored).
 services:
   papra:
     image: ghcr.io/papra-hq/papra:latest-root
