@@ -44,4 +44,4 @@ Mount path (override with `HOMELAB_ENV_MOUNT`):
 ~/.config/grok/environments/Homelab.env
 ```
 
-NixOS system deploys stay separate (`nixos-rebuild` with `--target-host`).
+NixOS system deploys stay separate (`nh os switch` with `--target-host`).

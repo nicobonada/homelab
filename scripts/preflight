@@ -3,8 +3,7 @@
 # shell and build the toplevel. No activation.
 #   ./scripts/preflight          # local: eval + shell smoke + build (gate switch)
 #   ./scripts/preflight --eval   # CI: eval only (runner is not the lab host)
-# Agents use nixos-rebuild, not nh.
-# Optional closure hint (not a gate): ~/src/grok/scripts/nvd-if-changed homelab
+# Agents apply with nh os switch --target-host (skill homelab).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

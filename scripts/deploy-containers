@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Apply one (or all) Docker Compose stacks to the lab host from a workstation.
-# NixOS system deploy is separate: nixos-rebuild with --target-host …
+# NixOS system deploy is separate: nh os switch with --target-host …
 #
 # Secrets: 1Password Environment **Homelab** (local .env mount). This script
 # materializes a filtered env file next to compose (gitignored) before `up`.
