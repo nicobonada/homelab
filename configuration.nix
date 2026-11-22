@@ -177,10 +177,14 @@
   security.sudo = {
     enable = true;
     # Single-admin VM: workstations deploy with
-    #   nh os switch . -H homelab --target-host nico@homelab -e passwordless
-    # (or nixos-rebuild --target-host … --elevate sudo). Remote activation runs
-    # `sudo sh -c 'nix-env …'` / switch-to-configuration — path-exact NOPASSWD
-    # rules cannot cover that. Root SSH stays off (PermitRootLogin = no).
+    #   nh os switch . -H homelab --target-host nico@homelab \
+    #     -e passwordless --no-systemd-run
+    # 26.05 systemd-run has no --output=cat, so nh's default remote
+    # wrapper fails. Direct switch-to-configuration is fine: sshd and
+    # tailscaled use restartIfChanged = false. Remote activation still
+    # runs `sudo sh -c 'nix-env …'` / switch-to-configuration —
+    # path-exact NOPASSWD rules cannot cover that. Root SSH stays off
+    # (PermitRootLogin = no).
     wheelNeedsPassword = false;
   };
 
