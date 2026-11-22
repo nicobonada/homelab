@@ -151,10 +151,11 @@ in
     pkgs.restic
   ];
 
-  # Bind target for aven-sync (compose). Empty until the named volume is
-  # copied here and the stack is redeployed.
+  # Bind target for aven-sync. The image runs as distroless nonroot
+  # (uid 65532). tmpfiles `d` resets mode/owner on every switch, so
+  # this must match the container or the bind is unreadable.
   systemd.tmpfiles.rules = [
-    "d ${avenData} 0750 nico users -"
+    "d ${avenData} 0700 65532 65532 -"
   ];
 
   sops = {
