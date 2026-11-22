@@ -28,9 +28,6 @@ in
         "force user" = "nico";
         "force group" = "users";
         comment = "Music library (read-only)";
-        # Leftover Syncthing markers are not media.
-        "hide files" = "/.stfolder/.stignore/.stversions/";
-        "veto files" = "/.stfolder/.stignore/.stversions/";
       };
     };
   };

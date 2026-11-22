@@ -68,14 +68,10 @@ let
         echo "music-backup: warning: no beets-state at $beets yet" >&2
       fi
 
-      # Leftover Syncthing markers / versioning are not media.
       restic backup \
         --one-file-system \
         --tag music \
         --tag hub \
-        --exclude .stfolder \
-        --exclude .stversions \
-        --exclude .stignore.tmp \
         "''${backup_paths[@]}"
 
       restic forget \
