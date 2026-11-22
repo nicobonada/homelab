@@ -16,8 +16,7 @@ Uses [Determinate Nix](https://determinate.systems/) and
 OpenTelemetry (Caddy traces + host metrics → Honeycomb): [`docs/opentelemetry.md`](docs/opentelemetry.md).
 
 Music library: NFSv4 of `/mnt/pve-backup/music` (`music-share.nix`) plus guest
-read-only Samba `\\homelab\music` (`samba.nix`). Syncthing hub remains until
-seats mount NFS.
+read-only Samba `\\homelab\music` (`samba.nix`). Seats mount NFS.
 
 ## Workstation shell
 
@@ -64,7 +63,7 @@ Homelab env keeps API tokens only.
 
 ### Homepage widget secrets
 
-Wired widgets: Proxmox, Caddy, Technitium, Tailscale, Syncthing. Tokens live in
+Wired widgets: Proxmox, Caddy, Technitium, Tailscale. Tokens live in
 1Password Environment **Homelab**; Tailscale access tokens max **90 days** —
 rotate `HOMEPAGE_VAR_TAILSCALE_KEY` and redeploy homepage.
 

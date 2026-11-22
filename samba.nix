@@ -3,13 +3,13 @@
   ...
 }:
 let
-  # Same tree as music-share.nix / syncthing.nix (hub folder id music).
+  # Same tree as music-share.nix.
   musicPath = "/mnt/pve-backup/music";
   shareRoot = "/mnt/pve-backup";
 in
 {
-  # Guest, read-only music for TVs / phones / file browsers (not Syncthing
-  # peers). Trees are nico:users; force user so guest (nobody) can read.
+  # Guest, read-only music for TVs / phones / file browsers. Trees are
+  # nico:users; force user so guest (nobody) can read.
   services.samba = {
     enable = true;
     openFirewall = true;
@@ -28,7 +28,7 @@ in
         "force user" = "nico";
         "force group" = "users";
         comment = "Music library (read-only)";
-        # Syncthing internals are not media.
+        # Leftover Syncthing markers are not media.
         "hide files" = "/.stfolder/.stignore/.stversions/";
         "veto files" = "/.stfolder/.stignore/.stversions/";
       };

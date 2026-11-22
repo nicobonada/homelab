@@ -56,6 +56,20 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
 
+  # No host port. Hairpin through Caddy like homepage. GET / is 404
+  # {"error":"not-found"} from the sync API. Caddy unknown-host is
+  # plain text and fails the body check.
+  - name: aven
+    group: lab
+    url: https://aven.lab.bonada.ca/
+    interval: 60s
+    client:
+      insecure: true
+    conditions:
+      - "[CONNECTED] == true"
+      - "[STATUS] == 404"
+      - "[BODY] == pat(*not-found*)"
+
   # Co-located: GATUS_URL_GLANCES should be http://glances:61208 (compose DNS).
   # host.docker.internal:61208 hairpins poorly and times out from this container.
   - name: glances

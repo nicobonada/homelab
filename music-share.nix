@@ -9,9 +9,9 @@ let
   beetsPath = "${shareRoot}/beets-state";
 in
 {
-  # NFSv4 reexport of virtiofs music trees. Seats will mount later; Syncthing
-  # hub stays until then. fsid= is required because this is a virtiofs
-  # reexport. Do not export dump/.
+  # NFSv4 reexport of virtiofs music trees. Seats mount this (nix-config
+  # music-nfs). fsid= is required because this is a virtiofs reexport.
+  # Do not export dump/.
   services.nfs.server = {
     enable = true;
     # Do NOT set openFirewall (that is all interfaces).
@@ -29,17 +29,15 @@ in
   };
 
   # Folder roots after virtiofs is up (tmpfiles races nofail mounts).
-  # Trees are nico:users 0775 so hub Syncthing (group users) can write.
+  # Trees are nico:users 0775 so NFS / Samba can share them.
   systemd.services.music-share-dirs = {
     description = "Ensure music share paths on pve-backup";
     wantedBy = [
       "nfs-server.service"
-      "syncthing.service"
       "samba-smbd.service"
     ];
     before = [
       "nfs-server.service"
-      "syncthing.service"
       "samba-smbd.service"
     ];
     after = [ "local-fs.target" ];

@@ -9,7 +9,6 @@
   imports = [
     ./hardware-configuration.nix
     ./vzdump-b2.nix
-    ./syncthing.nix
     ./music-backup.nix
     ./music-share.nix
     ./samba.nix

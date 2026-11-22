@@ -3,7 +3,7 @@
   # Personal NAR cache for seats (luciole, crawl-tiles, other cache misses).
   # Substituter URL is https://cache.lab.bonada.ca/<cache>. Caddy is the
   # door; :8080 is only so the compose proxy can hairpin via
-  # host.docker.internal (same pattern as Syncthing :8384).
+  # host.docker.internal (same pattern as Technitium :5380).
   services.atticd = {
     enable = true;
     environmentFile = config.sops.templates."atticd.env".path;

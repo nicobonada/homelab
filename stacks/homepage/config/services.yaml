@@ -61,18 +61,6 @@
           range: LastDay
           fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
-    - Syncthing:
-        icon: sh-syncthing
-        href: https://sync.lab.bonada.ca
-        description: File sync hub
-        siteMonitor: http://host.docker.internal:8384
-        # API key: Actions → Settings → General. href is Caddy.
-        widget:
-          type: syncthing
-          url: http://host.docker.internal:8384
-          key: "{{HOMEPAGE_VAR_SYNCTHING_KEY}}"
-          fields: ["connected", "synced", "errors", "storage"]
-
     - Grimmory:
         icon: sh-booklore
         href: https://books.lab.bonada.ca/dashboard
@@ -89,6 +77,15 @@
         siteMonitor: http://host.docker.internal:1221
         server: local
         container: papra
+        showStats: true
+
+    - Aven:
+        icon: mdi-cloud-sync
+        href: https://aven.lab.bonada.ca
+        description: Task sync
+        # GET / is 404 by design (sync API, no UI). Docker status is the probe.
+        server: local
+        container: aven-sync
         showStats: true
 
     - Homepage:

@@ -33,6 +33,7 @@ Gatus listens on **8080** in the container; we publish **`3001:8080`**:
 | Sibling in this compose (Glances) | `http://glances:61208` | Same Docker network as Gatus — **do not** use `host.docker.internal` (hairpin to published 61208 times out from containers; browser/Tailscale still work) |
 | Sibling in this compose (otelcol) | `http://otelcol:13133` | Collector `health_check` extension. No host publish. |
 | Other apps on the lab host | `http://host.docker.internal:<port>` | Published ports on the host from the Gatus container |
+| Aven (no host port) | `https://aven.lab.bonada.ca/` | Hairpin through Caddy. GET / is **404** `{"error":"not-found"}` (sync API, no UI). Body check so Caddy unknown-host 404 stays red. `client.insecure` for the local CA. |
 | Remote peers (Proxmox) | `https://pve.lab.bonada.ca` | A record → Caddy; Caddy proxies to `PVE_UPSTREAM` (`:8006`). `client.insecure` for the Caddy local CA. |
 | Human / Homepage **href** | Browser Service URLs | What you click from oakhill |
 | Homepage **widget** API | `http://host.docker.internal:3001` | Server-side fetch from Homepage container; published host port |

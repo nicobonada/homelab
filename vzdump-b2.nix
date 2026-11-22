@@ -52,9 +52,9 @@ in
   # PVE virtio-fs share of host /mnt/backup (T7).
   # Trees on the share (keep isolated):
   #   dump/        — Proxmox vzdumps (this module; rclone → B2)
-  #   music/       — Syncthing hub library (syncthing.nix)
-  #   beets-state/ — Syncthing beets DB/pickle (syncthing.nix); restic in music-backup.nix
-  # RW for Syncthing trees; rclone still only touches dump/.
+  #   music/       — library (NFS + Samba; restic in music-backup.nix)
+  #   beets-state/ — beets DB/pickle (restic in music-backup.nix)
+  # rclone still only touches dump/.
   fileSystems.${mountPoint} = {
     device = virtiofsTag;
     fsType = "virtiofs";

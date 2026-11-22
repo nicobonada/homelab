@@ -5,7 +5,7 @@
   ...
 }:
 let
-  # Same virtiofs share as vzdump / Syncthing music hub.
+  # Same virtiofs share as vzdump (host /mnt/backup).
   shareRoot = "/mnt/pve-backup";
   musicPath = "${shareRoot}/music";
   beetsPath = "${shareRoot}/beets-state";
@@ -22,8 +22,7 @@ let
     ];
     excludeShellChecks = [ "SC1090" ];
     text = ''
-      # Restic backup of Syncthing hub trees to the existing music B2 repo.
-      # Paths: music library + beets-state (library.db / state.pickle).
+      # Restic backup of music + beets-state to the existing music B2 repo.
       # Seat restic timers are retired; this host is sole forget/prune owner.
       set -euo pipefail
 
@@ -41,7 +40,7 @@ let
         exit 1
       fi
       if [[ ! -d $music ]]; then
-        echo "music-backup: missing $music (skip; wait for Syncthing hub)" >&2
+        echo "music-backup: missing $music (skip; wait for virtiofs)" >&2
         exit 0
       fi
 
@@ -69,7 +68,7 @@ let
         echo "music-backup: warning: no beets-state at $beets yet" >&2
       fi
 
-      # Syncthing markers / versioning are not media.
+      # Leftover Syncthing markers / versioning are not media.
       restic backup \
         --one-file-system \
         --tag music \
