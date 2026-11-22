@@ -1,20 +1,20 @@
-# Aven E2E sync server. Data (sqlite + server.yaml) is in the named volume;
-# first-run `server setup` is live on the lab, not in git. Image pin matches
-# nix-config llm-agents packages.aven; bump this tag with that lock.
+# Aven E2E sync server. Data (sqlite + server.yaml) is a host bind so
+# app-backup restic can see it. Copy the old named volume here before the
+# first deploy of this bind. First-run `server setup` is live on the lab,
+# not in git. Image pin matches nix-config llm-agents packages.aven; bump
+# this tag with that lock.
 # No host ports: Caddy reaches this on caddy_default as aven-sync:3746.
 services:
   aven:
     image: ghcr.io/raine/aven:0.1.56
     container_name: aven-sync
     volumes:
-      - aven-data:/data
+      - /home/nico/aven-sync:/data
     restart: unless-stopped
     stop_grace_period: 15s
     networks:
       - default
       - caddy
-volumes:
-  aven-data:
 networks:
   caddy:
     external: true

@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     ./vzdump-b2.nix
     ./music-backup.nix
+    ./app-backup.nix
     ./music-share.nix
     ./samba.nix
     ./printing.nix
