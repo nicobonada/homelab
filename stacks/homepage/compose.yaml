@@ -4,7 +4,8 @@
 # Bind mounts are on the *remote* Docker host when using DOCKER_HOST=ssh://…
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    # Pin release. :latest currently tracks v2.8.0.
+    image: ghcr.io/gethomepage/homepage:v2.8.0
     container_name: homepage
     restart: unless-stopped
     ports:

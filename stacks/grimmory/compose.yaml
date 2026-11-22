@@ -13,11 +13,6 @@ services:
       - DATABASE_USERNAME=${DB_USER}
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - BOOKLORE_PORT=${BOOKLORE_PORT}
-      # Java4Shell (CVE-2026-114938). Nightly still bundles Temurin
-      # 25.0.5+8; Alpine 25.0.5.1 images were not out when this was
-      # pulled. Drop once java -version shows 25.0.5.1. Additive
-      # JDK_JAVA_OPTIONS so the image JAVA_TOOL_OPTIONS stay.
-      - JDK_JAVA_OPTIONS=-XX:-UseBASE64Intrinsics
     depends_on:
       mariadb:
         condition: service_healthy
