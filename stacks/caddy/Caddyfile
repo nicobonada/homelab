@@ -37,7 +37,7 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 		reverse_proxy host.docker.internal:{$BOOKLORE_PORT:6060}
 	}
 
-	# gonic Subsonic server (stacks/gonic); same host/port the old mstream used.
+	# Navidrome Subsonic server (stacks/navidrome); same host/port gonic used.
 	@music host music.lab.bonada.ca
 	handle @music {
 		reverse_proxy host.docker.internal:3040

@@ -56,10 +56,10 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
 
-  # gonic Subsonic server. Hairpins through Caddy like homepage;
+  # Navidrome Subsonic server. Hairpins through Caddy like homepage;
   # host.docker.internal hairpin to a host port times out from this
   # container (see glances note). Web UI root returns 200.
-  - name: gonic
+  - name: navidrome
     group: lab
     url: https://music.lab.bonada.ca/
     interval: 60s

@@ -1,0 +1,30 @@
+# navidrome: Subsonic/OpenSubsonic music server against the read-only music
+# tree. Replaces the gonic stack (removed with this commit). Same Caddy name
+# (music.lab.bonada.ca) and host port 3040, so Sonora's server address and
+# the Caddyfile are unchanged. State (SQLite DB, caches, playlists) lives in
+# /home/nico/navidrome/data; the playlists folder also holds smart-playlist
+# rules (.nsp) that Sonora creates and edits via the API.
+#
+# No env_file: nothing secret here. First run: create the admin in the web UI.
+# gonic's m3u playlists were seeded into /data/playlists at cutover; their
+# paths are relative to the music root, which is the same tree.
+services:
+  navidrome:
+    image: deluan/navidrome:0.64.2
+    container_name: navidrome
+    environment:
+      - ND_MUSICFOLDER=/music
+      - ND_DATAFOLDER=/data
+      - ND_PLAYLISTSFOLDER=/data/playlists
+      # gonic scanned hourly; Navidrome has no fs watcher, so keep the
+      # same hourly schedule.
+      - ND_SCANSCHEDULE=1h
+      # Do not phone home with usage stats.
+      - ND_ENABLEINSIGHTSCOLLECTOR=false
+    ports:
+      # Image listens on 4533. Host 3040 unchanged (Caddy + Sonora).
+      - "3040:4533"
+    volumes:
+      - /home/nico/navidrome/data:/data
+      - /mnt/pve-backup/music:/music:ro
+    restart: unless-stopped
