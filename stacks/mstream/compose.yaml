@@ -1,0 +1,24 @@
+# mstream (music streaming) against the read-only music tree.
+# Music is the same /mnt/pve-backup/music that NFS (music-share.nix) and
+# guest Samba (samba.nix) reexport; mounted read-only so the streamer can
+# never touch the library. mstream keeps its DB and user list in /config
+# (host dir, same pattern as grimmory data dirs).
+#
+# No env_file: nothing secret here (PUID/PGID/TZ are not credentials).
+services:
+  mstream:
+    image: lscr.io/linuxserver/mstream:6.35.0
+    container_name: mstream
+    environment:
+      # Music tree is nico:users 0775 (music-share-dirs). TZ: lab timezone.
+      - PUID=1000
+      - PGID=100
+      - TZ=America/Argentina/Buenos_Aires
+      # In-container listener stays 3000; host port 3040 (3000 is Homepage).
+      - MSTREAM_PORT=3000
+    ports:
+      - "3040:3000"
+    volumes:
+      - /home/nico/mstream/config:/config
+      - /mnt/pve-backup/music:/music:ro
+    restart: unless-stopped

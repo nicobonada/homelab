@@ -79,6 +79,15 @@
         container: papra
         showStats: true
 
+    - mstream:
+        icon: mdi-music
+        href: https://music.lab.bonada.ca
+        description: Music streaming
+        siteMonitor: http://host.docker.internal:3040
+        server: local
+        container: mstream
+        showStats: true
+
     - Aven:
         icon: mdi-cloud-sync
         href: https://aven.lab.bonada.ca

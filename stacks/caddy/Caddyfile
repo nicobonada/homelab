@@ -12,7 +12,7 @@
 	admin :2019
 }
 
-dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, dns.lab.bonada.ca, aven.lab.bonada.ca, pve.lab.bonada.ca, cache.lab.bonada.ca {
+dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bonada.ca, music.lab.bonada.ca, dns.lab.bonada.ca, aven.lab.bonada.ca, pve.lab.bonada.ca, cache.lab.bonada.ca {
 	tracing {
 		span caddy
 	}
@@ -35,6 +35,12 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 	@books host books.lab.bonada.ca
 	handle @books {
 		reverse_proxy host.docker.internal:{$BOOKLORE_PORT:6060}
+	}
+
+	# mstream music streaming (stacks/mstream).
+	@music host music.lab.bonada.ca
+	handle @music {
+		reverse_proxy host.docker.internal:3040
 	}
 
 	@dns host dns.lab.bonada.ca

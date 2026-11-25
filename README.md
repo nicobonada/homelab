@@ -16,7 +16,8 @@ Uses [Determinate Nix](https://determinate.systems/) and
 OpenTelemetry (Caddy traces + host metrics → Honeycomb): [`docs/opentelemetry.md`](docs/opentelemetry.md).
 
 Music library: NFSv4 of `/mnt/pve-backup/music` (`music-share.nix`) plus guest
-read-only Samba `\\homelab\music` (`samba.nix`). Seats mount NFS.
+read-only Samba `\\homelab\music` (`samba.nix`). Seats mount NFS. mstream
+([stacks/mstream](stacks/mstream)) streams it at `https://music.lab.bonada.ca`.
 
 ## Workstation shell
 
