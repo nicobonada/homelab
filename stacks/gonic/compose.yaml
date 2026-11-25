@@ -1,0 +1,30 @@
+# gonic: folder-path-first Subsonic server against the read-only music tree.
+# Replaces the mstream stack (removed with this commit). Same Caddy name
+# (music.lab.bonada.ca) and host port 3040; gonic listens on 4747 in-container.
+# Music is the same /mnt/pve-backup/music that NFS/Samba reexport; read-only.
+# State (SQLite DB, transcode/cover cache) lives in /home/nico/gonic/data.
+#
+# No env_file: nothing secret here. First run: create the admin in the web UI.
+services:
+  gonic:
+    image: ghcr.io/sentriz/gonic:v0.23.0
+    container_name: gonic
+    environment:
+      - GONIC_MUSIC_PATH=/music
+      - GONIC_DB_PATH=/data/gonic.db
+      - GONIC_CACHE_PATH=/data/cache
+      # Scan at boot + every hour; fs watcher keeps it current between scans.
+      - GONIC_SCAN_AT_START_ENABLED=true
+      - GONIC_SCAN_WATCHER_ENABLED=true
+      - GONIC_SCAN_INTERVAL=60
+      # The library is beets-managed: read multi-valued tags as separate
+      # entries instead of one joined string.
+      - GONIC_MULTI_VALUE_GENRE=multi
+      - GONIC_MULTI_VALUE_ARTIST=multi
+      - GONIC_MULTI_VALUE_ALBUM_ARTIST=multi
+    ports:
+      - "3040:4747"
+    volumes:
+      - /home/nico/gonic/data:/data
+      - /mnt/pve-backup/music:/music:ro
+    restart: unless-stopped

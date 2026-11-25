@@ -79,13 +79,13 @@
         container: papra
         showStats: true
 
-    - mstream:
+    - gonic:
         icon: mdi-music
         href: https://music.lab.bonada.ca
-        description: Music streaming
+        description: Music streaming (Subsonic)
         siteMonitor: http://host.docker.internal:3040
         server: local
-        container: mstream
+        container: gonic
         showStats: true
 
     - Aven:
