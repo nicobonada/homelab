@@ -12,7 +12,9 @@ services:
     environment:
       - GONIC_MUSIC_PATH=/music
       - GONIC_DB_PATH=/data/gonic.db
+      # Both dirs are pre-created on the host mount (one-shot alpine mkdir).
       - GONIC_CACHE_PATH=/data/cache
+      - GONIC_PLAYLISTS_PATH=/data/playlists
       # Scan at boot + every hour; fs watcher keeps it current between scans.
       - GONIC_SCAN_AT_START_ENABLED=true
       - GONIC_SCAN_WATCHER_ENABLED=true
@@ -23,7 +25,9 @@ services:
       - GONIC_MULTI_VALUE_ARTIST=multi
       - GONIC_MULTI_VALUE_ALBUM_ARTIST=multi
     ports:
-      - "3040:4747"
+      # Image listens on 80 (default GONIC_LISTEN_ADDR is 0.0.0.0:80 here,
+      # not the upstream CLI default 4747). Host 3040 unchanged.
+      - "3040:80"
     volumes:
       - /home/nico/gonic/data:/data
       - /mnt/pve-backup/music:/music:ro
