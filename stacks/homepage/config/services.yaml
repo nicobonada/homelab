@@ -61,13 +61,13 @@
           range: LastDay
           fields: ["totalQueries", "totalBlocked", "totalCached", "totalClients"]
 
-    - Grimmory:
+    - BookOrbit:
         icon: sh-booklore
         href: https://books.lab.bonada.ca/dashboard
         description: Ebooks
         siteMonitor: http://host.docker.internal:6060
         server: local
-        container: grimmory
+        container: bookorbit
         showStats: true
 
     - Papra:

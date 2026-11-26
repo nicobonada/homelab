@@ -34,7 +34,7 @@ dashboard.lab.bonada.ca, status.lab.bonada.ca, docs.lab.bonada.ca, books.lab.bon
 
 	@books host books.lab.bonada.ca
 	handle @books {
-		reverse_proxy host.docker.internal:{$BOOKLORE_PORT:6060}
+		reverse_proxy host.docker.internal:{$BOOKORBIT_PORT:6060}
 	}
 
 	# Navidrome Subsonic server (stacks/navidrome); same host/port gonic used.

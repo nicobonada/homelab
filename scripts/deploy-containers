@@ -10,7 +10,7 @@
 #   ./scripts/deploy-containers monitoring
 #   ./scripts/deploy-containers homepage
 #   ./scripts/deploy-containers --all
-#   DOCKER_HOST=ssh://nico@homelab ./scripts/deploy-containers grimmory
+#   DOCKER_HOST=ssh://nico@homelab ./scripts/deploy-containers bookorbit
 #
 # Requires: docker CLI with compose; Homelab Environment mount present.
 set -euo pipefail
@@ -26,20 +26,20 @@ HOMELAB_ENV_MOUNT="${HOMELAB_ENV_MOUNT:-${XDG_CONFIG_HOME:-$HOME/.config}/grok/e
 # Empty = no env file for this stack.
 declare -A STACK_ENV_OUT=(
   [homepage]="secrets.env"
-  [grimmory]=".env"
+  [bookorbit]=".env"
   [papra]=".env"
   [monitoring]=".env"
   [caddy]=".env"
 )
 
 # Keys to materialize per stack (from the shared Homelab Environment).
-# Keep exact lists so APP_* from papra vs grimmory do not collide.
+# Keep exact lists so APP_* from papra vs bookorbit do not collide.
 declare -A STACK_ENV_KEYS=(
   [homepage]="HOMEPAGE_VAR_PVE_TOKEN HOMEPAGE_VAR_PVE_SECRET HOMEPAGE_VAR_TECHNITIUM_KEY HOMEPAGE_VAR_TAILSCALE_KEY HOMEPAGE_VAR_TAILSCALE_DEVICE_ID"
-  [grimmory]="APP_USER_ID APP_GROUP_ID TZ BOOKLORE_PORT DATABASE_URL DB_USER DB_PASSWORD DB_USER_ID DB_GROUP_ID MYSQL_ROOT_PASSWORD MYSQL_DATABASE"
+  [bookorbit]="TZ BOOKORBIT_PORT POSTGRES_PASSWORD JWT_SECRET PODCAST_ENCRYPTION_KEY SETUP_BOOTSTRAP_TOKEN"
   [papra]="AUTH_SECRET APP_BASE_URL CLIENT_BASE_URL"
-  [monitoring]="GATUS_URL_GRIMMORY GATUS_URL_PAPRA GATUS_URL_GLANCES GATUS_URL_TECHNITIUM HONEYCOMB_API_KEY"
-  [caddy]="HONEYCOMB_API_KEY BOOKLORE_PORT PVE_UPSTREAM"
+  [monitoring]="GATUS_URL_BOOKORBIT GATUS_URL_PAPRA GATUS_URL_GLANCES GATUS_URL_TECHNITIUM HONEYCOMB_API_KEY"
+  [caddy]="HONEYCOMB_API_KEY BOOKORBIT_PORT PVE_UPSTREAM"
 )
 
 # Stack dirs are those with compose.yaml (ignore README.md and other files).
@@ -217,7 +217,7 @@ shift
 if [[ $target == --all ]]; then
   # monitoring first: homepage and caddy join external monitoring_default.
   # caddy before aven-sync: aven joins external caddy_default.
-  preferred=(monitoring grimmory papra homepage caddy aven-sync)
+  preferred=(monitoring bookorbit papra homepage caddy aven-sync)
   for s in "${preferred[@]}"; do
     [[ -f $STACKS/$s/compose.yaml ]] || continue
     up_one "$s" "$@"

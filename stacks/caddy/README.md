@@ -20,7 +20,7 @@ container running with empty `Networks`.
 | `https://dashboard.lab.bonada.ca` | Homepage `:3000` |
 | `https://status.lab.bonada.ca` | Gatus `:3001` |
 | `https://docs.lab.bonada.ca` | Papra `:1221` |
-| `https://books.lab.bonada.ca` | Grimmory (`BOOKLORE_PORT`, default 6060) |
+| `https://books.lab.bonada.ca` | BookOrbit (`BOOKORBIT_PORT`, default 6060) |
 | `https://music.lab.bonada.ca` | Navidrome (Subsonic, `:3040`) |
 | `https://dns.lab.bonada.ca` | Technitium `:5380` |
 | `https://aven.lab.bonada.ca` | Aven sync (compose DNS `aven-sync:3746`) |

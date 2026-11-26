@@ -7,7 +7,7 @@ root; this directory is **apps only** and is deployed separately.
 
 | Directory | Stack |
 |-----------|--------|
-| `grimmory/` | Library app + MariaDB |
+| `bookorbit/` | Reading platform + PostgreSQL |
 | `papra/` | Documents |
 | `homepage/` | Dashboard (+ `config/`) |
 | `monitoring/` | Glances + Gatus + Honeycomb hostmetrics |
@@ -32,7 +32,7 @@ nix develop   # or: nix shell nixpkgs#docker-client
 cd ~/src/homelab
 ./scripts/deploy-containers monitoring
 ./scripts/deploy-containers homepage
-./scripts/deploy-containers grimmory
+./scripts/deploy-containers bookorbit
 # ./scripts/deploy-containers --all
 ```
 

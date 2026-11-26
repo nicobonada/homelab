@@ -1,0 +1,65 @@
+# BookOrbit (books) + PostgreSQL with pgvector
+# Data dirs stay on the host under /home/nico/bookorbit/.
+# Secrets: 1Password Homelab → .env (gitignored).
+services:
+  bookorbit:
+    image: ghcr.io/bookorbit/bookorbit:3.10.0
+    container_name: bookorbit
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TZ=${TZ}
+      # Config constant tied to this repo's public hostname; not a secret.
+      - APP_URL=https://books.lab.bonada.ca
+      - POSTGRES_HOST=bookorbit-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=bookorbit
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=bookorbit
+      - JWT_SECRET=${JWT_SECRET}
+      - SETUP_BOOTSTRAP_TOKEN=${SETUP_BOOTSTRAP_TOKEN}
+      # App encrypts podcast credentials with this; empty disables the feature.
+      - PODCAST_ENCRYPTION_KEY=${PODCAST_ENCRYPTION_KEY}
+      - LIBRARY_BROWSE_ROOT=/books
+    depends_on:
+      bookorbit-db:
+        condition: service_healthy
+    ports:
+      - "${BOOKORBIT_PORT}:3000"
+    volumes:
+      - /home/nico/bookorbit/books:/books
+      - /home/nico/bookorbit/data:/data
+    restart: unless-stopped
+
+  bookorbit-db:
+    image: pgvector/pgvector:pg18
+    container_name: bookorbit-db
+    environment:
+      - POSTGRES_USER=bookorbit
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=bookorbit
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - /home/nico/bookorbit/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s

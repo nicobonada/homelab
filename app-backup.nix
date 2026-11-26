@@ -8,10 +8,9 @@ let
   envFile = config.sops.templates."app-backup.env".path;
   passwordFile = config.sops.secrets."app_backup/restic_password".path;
 
-  # Host binds (compose). MariaDB datadir is not restic'd live; dump first.
-  grimmoryData = "/home/nico/grimmory/data";
-  grimmoryBooks = "/home/nico/grimmory/books";
-  grimmoryBookdrop = "/home/nico/grimmory/bookdrop";
+  # Host binds (compose). PostgreSQL datadir is not restic'd live; dump first.
+  bookorbitData = "/home/nico/bookorbit/data";
+  bookorbitBooks = "/home/nico/bookorbit/books";
   papraData = "/home/nico/papra/app-data";
   caddyData = "/home/nico/caddy/data";
   avenData = "/home/nico/aven-sync";
@@ -34,7 +33,7 @@ let
       password_file=${lib.escapeShellArg passwordFile}
       state_dir="''${STATE_DIRECTORY:-/var/lib/app-backup}"
       dump_dir="$state_dir/dumps"
-      dump_sql="$dump_dir/grimmory.sql"
+      dump_sql="$dump_dir/bookorbit.sql"
 
       if [[ ! -f $env_file ]]; then
         echo "app-backup: missing sops template $env_file (skip)" >&2
@@ -60,17 +59,15 @@ let
       export RESTIC_REPOSITORY
 
       mkdir -p "$dump_dir"
-      mariadb_running=$(
-        docker inspect -f '{{.State.Running}}' mariadb 2>/dev/null || true
+      postgres_running=$(
+        docker inspect -f '{{.State.Running}}' bookorbit-db 2>/dev/null || true
       )
-      if docker info >/dev/null 2>&1 && [[ $mariadb_running == true ]]; then
-        # Socket-root dump; --single-transaction keeps InnoDB consistent
-        # without stopping Grimmory.
-        docker exec -u 0 mariadb mariadb-dump -uroot \
-          --single-transaction --databases grimmory > "$dump_sql"
+      if docker info >/dev/null 2>&1 && [[ $postgres_running == true ]]; then
+        # pg_dump takes its own consistent snapshot; no need to stop BookOrbit.
+        docker exec bookorbit-db pg_dump -U bookorbit bookorbit > "$dump_sql"
         echo "app-backup: wrote $dump_sql" >&2
       else
-        echo "app-backup: warning: mariadb not running; skip SQL dump" >&2
+        echo "app-backup: warning: bookorbit-db not running; skip SQL dump" >&2
         rm -f "$dump_sql"
       fi
 
@@ -84,9 +81,8 @@ let
         fi
       }
       add_path "$dump_sql"
-      add_path ${lib.escapeShellArg grimmoryData}
-      add_path ${lib.escapeShellArg grimmoryBooks}
-      add_path ${lib.escapeShellArg grimmoryBookdrop}
+      add_path ${lib.escapeShellArg bookorbitData}
+      add_path ${lib.escapeShellArg bookorbitBooks}
       add_path ${lib.escapeShellArg papraData}
       add_path ${lib.escapeShellArg caddyData}
       add_path ${lib.escapeShellArg avenData}

@@ -69,7 +69,7 @@ Traces count as **events** (Caddy volume is tiny). Host scrapes count as **metri
 ## Not in scope
 
 - No OTLP receiver on `otelcol` (Caddy does not send to it).
-- No traces from Homepage, Gatus, Papra, Grimmory, Technitium, PVE.
+- No traces from Homepage, Gatus, Papra, BookOrbit, Technitium, PVE.
 - No logs pipeline.
 - Collector is not on the NixOS system image; it is a Compose app.
 

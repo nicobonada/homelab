@@ -2,7 +2,7 @@
 # Music is the same /mnt/pve-backup/music that NFS (music-share.nix) and
 # guest Samba (samba.nix) reexport; mounted read-only so the streamer can
 # never touch the library. mstream keeps its DB and user list in /config
-# (host dir, same pattern as grimmory data dirs).
+# (host dir, same pattern as bookorbit data dirs).
 #
 # No env_file: nothing secret here (PUID/PGID/TZ are not credentials).
 services:

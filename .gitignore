@@ -9,3 +9,6 @@ token
 stacks/**/.env
 stacks/**/secrets.env
 stacks/**/*-admin.env
+
+# Browser automation dumps (playwright MCP snapshots/console logs)
+.playwright-mcp/

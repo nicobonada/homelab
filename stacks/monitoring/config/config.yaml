@@ -40,9 +40,9 @@ endpoints:
       - "[CONNECTED] == true"
       - "[STATUS] < 400"
 
-  - name: grimmory
+  - name: bookorbit
     group: lab
-    url: "${GATUS_URL_GRIMMORY}"
+    url: "${GATUS_URL_BOOKORBIT}"
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
