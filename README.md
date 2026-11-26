@@ -81,8 +81,8 @@ Age recipients: `.sops.yaml` (workstation user + lab host).
 
 ## App data backup
 
-Restic of Grimmory (SQL dump + books/data), Papra, Aven, and the Caddy
-local CA to Backblaze B2. Module [`app-backup.nix`](app-backup.nix), timer
+Restic of Grimmory (SQL dump + books/data), Papra, Aven, Navidrome state,
+and the Caddy local CA to Backblaze B2. Module [`app-backup.nix`](app-backup.nix), timer
 02:30. Secrets in `secrets/app-backup.yaml`. After filling B2 keys, run
 `app-backup-init` once on the lab, then the timer. Attic NARs and Gatus
 history are not in this repo.

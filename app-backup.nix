@@ -15,6 +15,8 @@ let
   papraData = "/home/nico/papra/app-data";
   caddyData = "/home/nico/caddy/data";
   avenData = "/home/nico/aven-sync";
+  # Navidrome state: DB (play counts, favorites), smart playlists, cache.
+  navidromeData = "/home/nico/navidrome/data";
 
   app-backup = pkgs.writeShellApplication {
     name = "app-backup";
@@ -88,6 +90,7 @@ let
       add_path ${lib.escapeShellArg papraData}
       add_path ${lib.escapeShellArg caddyData}
       add_path ${lib.escapeShellArg avenData}
+      add_path ${lib.escapeShellArg navidromeData}
 
       if [[ ''${#backup_paths[@]} -eq 0 ]]; then
         echo "app-backup: nothing to back up" >&2
